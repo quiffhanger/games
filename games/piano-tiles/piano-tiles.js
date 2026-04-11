@@ -38,10 +38,23 @@ const DIFFICULTIES = {
 const DEFAULT_DIFFICULTY = 'normal';
 const DIFF_KEY = 'piano-tiles.difficulty';
 
+// "Tweak" multiplier — the Easier/Harder buttons on the game-over dialog
+// shift this up or down in ~20% steps, persisted across sessions. It
+// multiplies the preset's startSpeed, speedStep and maxSpeed on top of
+// whatever difficulty the player picked.
+const TWEAK_KEY  = 'piano-tiles.tweak';
+const TWEAK_BASE = 1.2;
+const TWEAK_MIN  = -6;   // ~0.33x
+const TWEAK_MAX  = 6;    // ~2.99x
+
+// Lives setting — number of misses allowed, or 0 for unlimited.
+const LIVES_KEY       = 'piano-tiles.lives';
+const DEFAULT_LIVES   = 3;
+const LIVES_CHOICES   = [1, 3, 5, 0]; // 0 = infinite
+const MAX_LIVES_HEARTS = 5;
+
 // Space between consecutive tile tops (px). As speed rises, tiles come faster.
 const SPAWN_INTERVAL_PX = TILE_H * 1.85;
-
-const LIVES = 3;
 
 // Colours per column (visual only now; the note played comes from the
 // current classical melody).
@@ -156,10 +169,13 @@ const overlay   = document.getElementById('gameover');
 const titleEl   = document.getElementById('gameover-title');
 const finalEl   = document.getElementById('gameover-score');
 const againBtn  = document.getElementById('again');
+const easierBtn = document.getElementById('easier');
+const harderBtn = document.getElementById('harder');
 const settingsBtn   = document.getElementById('settings-btn');
 const settingsEl    = document.getElementById('settings');
 const settingsClose = document.getElementById('settings-close');
 const diffBtnsEl    = document.getElementById('diff-btns');
+const livesBtnsEl   = document.getElementById('lives-btns');
 
 // ── Canvas setup ───────────────────────────────────────────────────────────
 
@@ -236,7 +252,35 @@ function saveDifficulty(k) {
   try { localStorage.setItem(DIFF_KEY, k); } catch { /* */ }
 }
 
+function loadTweak() {
+  try {
+    const n = parseInt(localStorage.getItem(TWEAK_KEY) || '0', 10);
+    if (Number.isNaN(n)) return 0;
+    return Math.max(TWEAK_MIN, Math.min(TWEAK_MAX, n));
+  } catch { return 0; }
+}
+function saveTweak(n) {
+  try { localStorage.setItem(TWEAK_KEY, String(n)); } catch { /* */ }
+}
+function tweakMult() {
+  return Math.pow(TWEAK_BASE, tweakStep);
+}
+
+function loadLivesMax() {
+  try {
+    const raw = localStorage.getItem(LIVES_KEY);
+    if (raw === null) return DEFAULT_LIVES;
+    const n = parseInt(raw, 10);
+    return LIVES_CHOICES.includes(n) ? n : DEFAULT_LIVES;
+  } catch { return DEFAULT_LIVES; }
+}
+function saveLivesMax(n) {
+  try { localStorage.setItem(LIVES_KEY, String(n)); } catch { /* */ }
+}
+
 let currentDiff = loadDifficulty();
+let tweakStep   = loadTweak();
+let livesMax    = loadLivesMax();
 
 // ── Game state ──────────────────────────────────────────────────────────────
 
@@ -253,10 +297,11 @@ let melodyBannerTimer; // seconds remaining for the melody-name flash
 
 function newGame() {
   const diff = DIFFICULTIES[currentDiff];
+  const mult = tweakMult();
   tiles       = [];
   score       = 0;
-  lives       = LIVES;
-  speed       = diff.startSpeed;
+  lives       = livesMax;     // irrelevant when livesMax === 0 (infinite)
+  speed       = diff.startSpeed * mult;
   status      = 'playing';
   spawnOffset = 0;
   tilesHit    = 0;
@@ -279,7 +324,12 @@ function newGame() {
 }
 
 function renderLives() {
-  livesEl.innerHTML = Array.from({ length: LIVES }, (_, i) =>
+  if (livesMax === 0) {
+    livesEl.innerHTML =
+      '<span class="pt-heart pt-heart--infinite" aria-label="Infinite lives">&#8734;</span>';
+    return;
+  }
+  livesEl.innerHTML = Array.from({ length: livesMax }, (_, i) =>
     `<span class="pt-heart${i < lives ? '' : ' pt-heart--lost'}">&#10084;</span>`
   ).join('');
 }
@@ -343,9 +393,11 @@ function tryHit(col) {
   bestEl.textContent = String(getBest());
 
   // Speed bump every `tilesPerStep` tiles, from the chosen difficulty.
+  // The Easier/Harder tweak scales speed numbers on top of the preset.
   const diff = DIFFICULTIES[currentDiff];
+  const mult = tweakMult();
   if (tilesHit % diff.tilesPerStep === 0) {
-    speed = Math.min(speed + diff.speedStep, diff.maxSpeed);
+    speed = Math.min(speed + diff.speedStep * mult, diff.maxSpeed * mult);
   }
 
   // Play the next note from the current classical melody.
@@ -395,6 +447,19 @@ canvas.addEventListener('mousedown', (e) => {
 
 againBtn.addEventListener('click', newGame);
 
+// ── Easier / Harder (game-over dialog) ─────────────────────────────────────
+// Each click shifts the persistent tweak step, which multiplies the preset's
+// speed numbers by ~1.2^step on the next game. Step is clamped so kids
+// can't end up with a frozen or supersonic game.
+
+function nudgeTweak(delta) {
+  tweakStep = Math.max(TWEAK_MIN, Math.min(TWEAK_MAX, tweakStep + delta));
+  saveTweak(tweakStep);
+  newGame();
+}
+easierBtn.addEventListener('click', () => nudgeTweak(-1));
+harderBtn.addEventListener('click', () => nudgeTweak(+1));
+
 // ── Settings modal ─────────────────────────────────────────────────────────
 
 function syncDiffButtons() {
@@ -402,10 +467,18 @@ function syncDiffButtons() {
     btn.dataset.selected = btn.dataset.diff === currentDiff ? 'true' : 'false';
   }
 }
+function syncLivesButtons() {
+  for (const btn of livesBtnsEl.querySelectorAll('[data-lives]')) {
+    const v = parseInt(btn.dataset.lives, 10);
+    btn.dataset.selected = v === livesMax ? 'true' : 'false';
+  }
+}
 syncDiffButtons();
+syncLivesButtons();
 
 function openSettings() {
   syncDiffButtons();
+  syncLivesButtons();
   settingsEl.hidden = false;
 }
 function closeSettings() {
@@ -428,6 +501,18 @@ diffBtnsEl.addEventListener('click', (e) => {
   saveDifficulty(key);
   syncDiffButtons();
   // Restart so the new speed takes effect immediately.
+  newGame();
+  closeSettings();
+});
+
+livesBtnsEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-lives]');
+  if (!btn) return;
+  const v = parseInt(btn.dataset.lives, 10);
+  if (!LIVES_CHOICES.includes(v)) return;
+  livesMax = v;
+  saveLivesMax(v);
+  syncLivesButtons();
   newGame();
   closeSettings();
 });
@@ -469,14 +554,17 @@ function update(dt) {
   for (const t of tiles) {
     if (t.state === 'falling' && t.y > MISS_Y) {
       t.state = 'missed';
-      lives--;
-      renderLives();
       playMiss();
       shakeTimer = 0.25;
-      if (lives <= 0) {
-        status = 'gameover';
-        titleEl.textContent = score >= 5 ? 'Amazing! 🎉' : 'Oh no! 💔';
-        finalEl.textContent = `You tapped ${score} tile${score !== 1 ? 's' : ''}!`;
+      // Infinite mode: misses still look/sound bad but never end the game.
+      if (livesMax > 0) {
+        lives--;
+        renderLives();
+        if (lives <= 0) {
+          status = 'gameover';
+          titleEl.textContent = score >= 5 ? 'Amazing! 🎉' : 'Oh no! 💔';
+          finalEl.textContent = `You tapped ${score} tile${score !== 1 ? 's' : ''}!`;
+        }
       }
     }
   }

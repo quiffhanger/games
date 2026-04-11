@@ -75,6 +75,39 @@
   opacity: 0.8;
 }
 
+/* Easier / Harder tweak row under the Play Again button. */
+.pt-tweak-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.pt-tweak-btn {
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.9rem;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  flex: 1;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.pt-tweak-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.pt-heart--infinite {
+  font-size: 1.8rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
 /* Settings gear button in the header. */
 .pt-settings-btn {
   width: 44px;
@@ -138,6 +171,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-bottom: 1.25rem;
+}
+
+.pt-settings__btns--4 {
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .pt-settings__btns button {
