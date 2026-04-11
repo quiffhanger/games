@@ -140,3 +140,27 @@ body {
   background: #111;
   border-radius: 50%;
 }
+
+/* Piano Tiles icon — four coloured key bars. */
+.tile__art--piano {
+  align-items: flex-end;
+}
+
+.piano-keys {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  width: 90%;
+  height: 90%;
+}
+
+.piano-key {
+  flex: 1;
+  border-radius: 6px 6px 10px 10px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.piano-key:nth-child(1) { height: 75%; }
+.piano-key:nth-child(2) { height: 100%; }
+.piano-key:nth-child(3) { height: 85%; }
+.piano-key:nth-child(4) { height: 60%; }

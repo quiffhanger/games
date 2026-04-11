@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#0b1026" />
+    <title>Piano Tiles</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="icon" href="../../icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../../icons/icon-192.png" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="./piano-tiles.css" />
+  </head>
+  <body class="pt-body">
+    <header class="pt-header">
+      <a class="pac-back" href="../../" aria-label="Back to games">&larr;</a>
+      <div class="pt-lives" id="lives" aria-label="Lives"></div>
+      <div class="pt-score-wrap">
+        <span class="pac-score">
+          <span class="pac-score__label">Score</span>
+          <span class="pac-score__value" id="score">0</span>
+        </span>
+        <span class="pac-score">
+          <span class="pac-score__label">Best</span>
+          <span class="pac-score__value" id="best">0</span>
+        </span>
+      </div>
+    </header>
+
+    <main class="pt-main">
+      <div class="pt-stage">
+        <canvas id="game"></canvas>
+        <div class="pac-win" id="gameover" hidden>
+          <div class="pac-win__card">
+            <div class="pac-win__title" id="gameover-title">Game Over!</div>
+            <div class="pt-final-score" id="gameover-score"></div>
+            <button class="pac-win__btn" id="again" type="button">
+              Play Again
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="./piano-tiles.js"></script>
+  </body>
+</html>
