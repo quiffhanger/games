@@ -31,6 +31,41 @@
   font-weight: 700;
 }
 
+/* Tilt toggle — shows when tilt is enabled by becoming yellow. */
+.pac-tilt-btn {
+  height: 44px;
+  padding: 0 0.9rem;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--bg-2);
+  color: var(--fg);
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+}
+
+.pac-tilt-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.pac-tilt-btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: #222;
+  border-color: #fff6b0;
+}
+
+/* When tilt mode is on, every d-pad cluster disappears — it's tilt or
+   buttons, never both. This selector has higher specificity than the
+   portrait/landscape display rules below so it wins. */
+.pacman-body--tilt .dpad {
+  display: none;
+}
+
 .pac-scores {
   margin-left: auto;
   display: flex;

@@ -11,6 +11,7 @@ const scoreEl = document.getElementById('score');
 const bestEl = document.getElementById('best');
 const winEl = document.getElementById('win');
 const againBtn = document.getElementById('again');
+const tiltBtn = document.getElementById('tilt-btn');
 
 // --- Sizing ------------------------------------------------------------
 // Render at a fixed logical tile size, then scale via CSS. This keeps the
@@ -81,7 +82,7 @@ function newGame() {
 }
 
 // --- Input wiring -----------------------------------------------------
-bindInput({
+const input = bindInput({
   canvas,
   onDir: (name) => {
     ensureAudio(); // Unlock audio on first user gesture
@@ -92,6 +93,25 @@ bindInput({
 
 againBtn.addEventListener('click', () => {
   newGame();
+});
+
+// --- Tilt toggle -----------------------------------------------------
+// Explicit on/off. When on the d-pad is hidden and swipe is suppressed,
+// so it's tilt-exclusive — no conflicting inputs. Not persisted across
+// reloads: iOS needs a user gesture to grant motion permission, and
+// silently re-requesting on page load would fail anyway.
+let tiltOn = false;
+tiltBtn.addEventListener('click', async () => {
+  if (!tiltOn) {
+    const granted = await input.enableTilt();
+    if (!granted) return; // permission denied or unsupported
+    tiltOn = true;
+  } else {
+    input.disableTilt();
+    tiltOn = false;
+  }
+  tiltBtn.setAttribute('aria-pressed', tiltOn ? 'true' : 'false');
+  document.body.classList.toggle('pacman-body--tilt', tiltOn);
 });
 
 // --- Collision -------------------------------------------------------
