@@ -8,7 +8,7 @@
 //     pieces (Ode to Joy, Für Elise, Spring from Four Seasons, etc.).
 //   • 3 hearts — lose one per missed tile (tile exits bottom untouched).
 //   • Slow start speed that gently increases every 8 tiles.
-//   • Very generous hit window so a 4-year-old can succeed.
+//   • No timing window: any tile on screen in a column is hittable.
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -20,10 +20,6 @@ const TILE_W = W / COLS;      // 90 px per column
 const TILE_H = 130;           // tall so they're easy to hit
 const GAP = 6;                // gap between tile and column edge
 
-// Visible "tap here" line. Tile is hittable once its bottom has reached
-// (or passed) this y — so the tile visibly touches the line before it's
-// valid to tap. Kids can see exactly when to act.
-const LINE_Y = H * 0.55;      // 352 px from top
 // Miss: tile top passes this y (a little below the bottom edge).
 const MISS_Y = H + TILE_H * 0.25;
 
@@ -51,9 +47,6 @@ const LIVES = 3;
 // current classical melody).
 const COL_COLORS  = ['#ff77c6', '#ffd600', '#4fe3ff', '#8aff80'];
 const COL_SHADOW  = ['#c2005a', '#c79a00', '#0097b8', '#2d9900'];
-
-// Pulse timer for the tap line's glow.
-let linePulse = 0;
 
 // ── Classical melodies ─────────────────────────────────────────────────────
 // Each note is a MIDI note number (60 = middle C). Kids "play" each melody
@@ -331,12 +324,12 @@ function burst(cx, cy, color) {
 // ── Hit detection ───────────────────────────────────────────────────────────
 
 function tryHit(col) {
-  // Find the lowest falling tile in this column that's hittable.
-  // Hittable = tile's bottom has reached or passed the tap line.
+  // Any falling tile in this column is fair game — we pick the one
+  // closest to the bottom (most urgent). There's no timing window: if
+  // a tile is on screen in the column you tapped, you hit it.
   let best = null;
   for (const t of tiles) {
     if (t.col !== col || t.state !== 'falling') continue;
-    if (t.y + TILE_H < LINE_Y) continue; // not touching the line yet
     if (!best || t.y > best.y) best = t;
   }
   if (!best) return false;
@@ -380,14 +373,9 @@ function colFromX(clientX) {
   return Math.min(COLS - 1, Math.max(0, Math.floor(fracX * COLS)));
 }
 
-canvas.addEventListener('pointerdown', (e) => {
-  e.preventDefault();
-  ensureAC();
-  if (status !== 'playing') return;
-  const col = colFromX(e.clientX);
-  tryHit(col);
-});
-
+// Touch path (iOS/iPad/Android). preventDefault suppresses the synthetic
+// mouse events iOS would otherwise fire afterwards, so mousedown below
+// doesn't double-process the same tap.
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
   ensureAC();
@@ -396,6 +384,14 @@ canvas.addEventListener('touchstart', (e) => {
     tryHit(colFromX(t.clientX));
   }
 }, { passive: false });
+
+// Mouse path (desktop). Never fires on iOS because touchstart preventDefault'd.
+canvas.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  ensureAC();
+  if (status !== 'playing') return;
+  tryHit(colFromX(e.clientX));
+});
 
 againBtn.addEventListener('click', newGame);
 
@@ -496,7 +492,6 @@ function update(dt) {
 
   if (shakeTimer > 0) shakeTimer -= dt;
   if (melodyBannerTimer > 0) melodyBannerTimer -= dt;
-  linePulse += dt;
 }
 
 function updateParticles(dt) {
@@ -538,10 +533,6 @@ function render() {
     ctx.stroke();
   }
 
-  // Tap line — a bright pulsing "tap here" line. Tiles are hittable once
-  // their bottom edge has reached or passed this line.
-  drawTapLine();
-
   // Tiles.
   for (const t of tiles) {
     drawTile(t);
@@ -560,39 +551,6 @@ function render() {
   }
   ctx.globalAlpha = 1;
 
-  ctx.restore();
-}
-
-function drawTapLine() {
-  // Soft pulsing opacity so it catches the eye.
-  const pulse = 0.65 + Math.sin(linePulse * 3.2) * 0.25;
-
-  // Glow underlay.
-  ctx.save();
-  ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
-  ctx.shadowBlur = 18;
-  ctx.strokeStyle = `rgba(255, 255, 255, ${pulse})`;
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(0, LINE_Y);
-  ctx.lineTo(W, LINE_Y);
-  ctx.stroke();
-  ctx.restore();
-
-  // Down-pointing arrows above the line, one per column, inviting the kid
-  // to tap each lane when a tile reaches it.
-  ctx.save();
-  ctx.fillStyle = `rgba(255, 255, 255, ${0.45 * pulse + 0.15})`;
-  for (let c = 0; c < COLS; c++) {
-    const cx = c * TILE_W + TILE_W / 2;
-    const tipY = LINE_Y - 10;
-    ctx.beginPath();
-    ctx.moveTo(cx, tipY);
-    ctx.lineTo(cx - 9, tipY - 14);
-    ctx.lineTo(cx + 9, tipY - 14);
-    ctx.closePath();
-    ctx.fill();
-  }
   ctx.restore();
 }
 
