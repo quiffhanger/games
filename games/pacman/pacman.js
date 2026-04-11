@@ -11,7 +11,6 @@ const scoreEl = document.getElementById('score');
 const bestEl = document.getElementById('best');
 const winEl = document.getElementById('win');
 const againBtn = document.getElementById('again');
-const dpad = document.getElementById('dpad');
 
 // --- Sizing ------------------------------------------------------------
 // Render at a fixed logical tile size, then scale via CSS. This keeps the
@@ -84,7 +83,6 @@ function newGame() {
 // --- Input wiring -----------------------------------------------------
 bindInput({
   canvas,
-  dpad,
   onDir: (name) => {
     ensureAudio(); // Unlock audio on first user gesture
     if (state.status !== 'playing') return;

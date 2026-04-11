@@ -30,10 +30,10 @@ const MISS_Y = H + TILE_H * 0.25;
 //   tilesPerStep:  how many taps between speed bumps
 //   maxSpeed:      cap on the fall speed
 const DIFFICULTIES = {
-  easy:   { label: 'Easy',   startSpeed: 170, speedStep: 10, tilesPerStep: 8, maxSpeed: 330 },
-  normal: { label: 'Normal', startSpeed: 200, speedStep: 20, tilesPerStep: 5, maxSpeed: 560 },
-  fast:   { label: 'Fast',   startSpeed: 240, speedStep: 30, tilesPerStep: 4, maxSpeed: 720 },
-  crazy:  { label: 'Crazy',  startSpeed: 280, speedStep: 40, tilesPerStep: 3, maxSpeed: 900 },
+  easy:   { label: 'Easy',   startSpeed: 170, speedStep: 10, tilesPerStep: 16, maxSpeed: 330 },
+  normal: { label: 'Normal', startSpeed: 200, speedStep: 20, tilesPerStep: 10, maxSpeed: 560 },
+  fast:   { label: 'Fast',   startSpeed: 240, speedStep: 30, tilesPerStep: 8,  maxSpeed: 720 },
+  crazy:  { label: 'Crazy',  startSpeed: 280, speedStep: 40, tilesPerStep: 6,  maxSpeed: 900 },
 };
 const DEFAULT_DIFFICULTY = 'normal';
 const DIFF_KEY = 'piano-tiles.difficulty';

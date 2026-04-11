@@ -3,7 +3,9 @@
 .pacman-body {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--bg);
 }
 
@@ -12,6 +14,7 @@
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1rem;
+  flex-shrink: 0;
 }
 
 .pac-back {
@@ -54,18 +57,25 @@
   color: var(--accent);
 }
 
+/* --- Main layout ---------------------------------------------------
+   Portrait (default): column — stage on top, single d-pad below.
+   Landscape: row — left pad, stage, right pad.
+*/
 .pac-main {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 0.75rem 1rem;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem 0.75rem;
 }
 
 .pac-stage {
   position: relative;
+  flex: 1;
+  min-height: 0;
   width: 100%;
   max-width: 560px;
   display: flex;
@@ -74,12 +84,14 @@
 }
 
 #game {
-  width: 100%;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
   background: var(--bg);
   border-radius: 18px;
   touch-action: none;
-  display: block;
 }
 
 /* Win overlay */
@@ -131,28 +143,24 @@
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
 }
 
-/* D-pad */
+/* --- D-pad shared -------------------------------------------------- */
 .dpad {
-  display: grid;
-  grid-template-columns: repeat(3, 72px);
-  grid-template-rows: repeat(3, 72px);
-  gap: 6px;
   touch-action: none;
+  flex-shrink: 0;
 }
 
 .dpad__btn {
-  width: 100%;
-  height: 100%;
   border: none;
   border-radius: 14px;
   background: var(--bg-2);
   color: var(--fg);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
   cursor: pointer;
+  padding: 0;
 }
 
 .dpad__btn:active,
@@ -162,25 +170,56 @@
   background: #1d2755;
 }
 
-.dpad__btn--up {
-  grid-column: 2;
-  grid-row: 1;
-}
-.dpad__btn--left {
-  grid-column: 1;
-  grid-row: 2;
-}
-.dpad__btn--right {
-  grid-column: 3;
-  grid-row: 2;
-}
-.dpad__btn--down {
-  grid-column: 2;
-  grid-row: 3;
+/* --- Portrait d-pad (3x3 + cross) ---------------------------------- */
+.dpad--port {
+  display: grid;
+  grid-template-columns: repeat(3, min(22vw, 72px));
+  grid-template-rows: repeat(3, min(22vw, 72px));
+  gap: 6px;
 }
 
-@media (min-width: 640px) {
-  .dpad {
+.dpad--port .dpad__btn--up    { grid-column: 2; grid-row: 1; }
+.dpad--port .dpad__btn--left  { grid-column: 1; grid-row: 2; }
+.dpad--port .dpad__btn--right { grid-column: 3; grid-row: 2; }
+.dpad--port .dpad__btn--down  { grid-column: 2; grid-row: 3; }
+
+/* --- Landscape d-pads (L-shaped clusters on each side) ------------- */
+.dpad--land {
+  display: none;
+  grid-template-columns: repeat(2, min(18vh, 76px));
+  grid-template-rows: repeat(2, min(18vh, 76px));
+  gap: 6px;
+}
+
+/* Left cluster: the LEFT button spans both rows on the left,
+   with UP and DOWN stacked on the right. */
+.dpad--land-left .dpad__land-side { grid-column: 1; grid-row: 1 / span 2; }
+.dpad--land-left .dpad__land-up   { grid-column: 2; grid-row: 1; }
+.dpad--land-left .dpad__land-down { grid-column: 2; grid-row: 2; }
+
+/* Right cluster: mirrored — RIGHT spans both rows on the right,
+   UP and DOWN stacked on the left. */
+.dpad--land-right .dpad__land-side { grid-column: 2; grid-row: 1 / span 2; }
+.dpad--land-right .dpad__land-up   { grid-column: 1; grid-row: 1; }
+.dpad--land-right .dpad__land-down { grid-column: 1; grid-row: 2; }
+
+/* --- Orientation switch -------------------------------------------- */
+@media (orientation: landscape) {
+  .pac-main {
+    flex-direction: row;
+    gap: 0.75rem;
+    padding: 0.25rem 0.5rem 0.5rem;
+  }
+  .pac-stage {
+    max-width: none;
+    height: 100%;
+  }
+  .dpad--port { display: none; }
+  .dpad--land { display: grid; }
+}
+
+@media (min-width: 640px) and (orientation: portrait) {
+  .dpad--port {
     grid-template-columns: repeat(3, 84px);
     grid-template-rows: repeat(3, 84px);
   }

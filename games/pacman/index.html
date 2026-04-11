@@ -30,6 +30,19 @@
     </header>
 
     <main class="pac-main">
+      <!-- Landscape: up/down/left cluster to the left of the maze. -->
+      <div class="dpad dpad--land dpad--land-left" aria-label="Left controls">
+        <button class="dpad__btn dpad__land-up" data-dir="up" aria-label="Up">
+          &#9650;
+        </button>
+        <button class="dpad__btn dpad__land-down" data-dir="down" aria-label="Down">
+          &#9660;
+        </button>
+        <button class="dpad__btn dpad__land-side" data-dir="left" aria-label="Left">
+          &#9664;
+        </button>
+      </div>
+
       <div class="pac-stage">
         <canvas id="game" width="600" height="520"></canvas>
         <div class="pac-win" id="win" hidden>
@@ -42,7 +55,21 @@
         </div>
       </div>
 
-      <div class="dpad" id="dpad" aria-label="Direction pad">
+      <!-- Landscape: up/down/right cluster to the right of the maze. -->
+      <div class="dpad dpad--land dpad--land-right" aria-label="Right controls">
+        <button class="dpad__btn dpad__land-up" data-dir="up" aria-label="Up">
+          &#9650;
+        </button>
+        <button class="dpad__btn dpad__land-down" data-dir="down" aria-label="Down">
+          &#9660;
+        </button>
+        <button class="dpad__btn dpad__land-side" data-dir="right" aria-label="Right">
+          &#9654;
+        </button>
+      </div>
+
+      <!-- Portrait: single traditional d-pad below the maze. -->
+      <div class="dpad dpad--port" aria-label="Direction pad">
         <button class="dpad__btn dpad__btn--up" data-dir="up" aria-label="Up">
           &#9650;
         </button>
