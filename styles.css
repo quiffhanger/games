@@ -1,0 +1,142 @@
+/* Shared base + hub styles. */
+
+:root {
+  --bg: #0b1026;
+  --bg-2: #141b3d;
+  --fg: #ffffff;
+  --accent: #ffd600;
+  --pink: #ff77c6;
+  --cyan: #4fe3ff;
+  --wall: #7ec8ff;
+  --dot: #ffe082;
+  --safe-top: env(safe-area-inset-top, 0);
+  --safe-bottom: env(safe-area-inset-bottom, 0);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+body {
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
+
+/* -------- Hub -------- */
+
+.hub {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  text-align: center;
+}
+
+.hub__title {
+  font-size: clamp(2.25rem, 8vw, 3.5rem);
+  margin: 0.5rem 0 0.25rem;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.hub__subtitle {
+  margin: 0 0 2rem;
+  opacity: 0.75;
+  font-size: 1.05rem;
+}
+
+.tiles {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  background: var(--bg-2);
+  border-radius: 1.25rem;
+  text-decoration: none;
+  color: var(--fg);
+  font-weight: 700;
+  font-size: 1.25rem;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255, 255, 255, 0.05)
+    inset;
+  transition: transform 0.08s ease;
+}
+
+.tile:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25),
+    0 0 0 2px rgba(255, 255, 255, 0.05) inset;
+}
+
+.tile__art {
+  width: 60%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile__label {
+  font-size: 1.1rem;
+}
+
+/* Little Pac-Man face made with a single div. */
+.pac {
+  --size: 100%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 30% 30%, #fff176, var(--accent) 60%);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+.pac::before {
+  /* mouth wedge */
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -1px;
+  width: 55%;
+  height: 55%;
+  background: var(--bg-2);
+  transform: translateY(-50%);
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+.pac::after {
+  /* eye */
+  content: "";
+  position: absolute;
+  top: 18%;
+  left: 48%;
+  width: 12%;
+  height: 12%;
+  background: #111;
+  border-radius: 50%;
+}
