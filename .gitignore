@@ -3,3 +3,6 @@ cdk.out/
 *.js
 *.d.ts
 !infra/cdk.json
+!app.js
+!sw.js
+!games/**/*.js

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#0b1026" />
+    <title>Colouring</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="icon" href="../../icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../../icons/icon-192.png" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="./colouring.css" />
+  </head>
+  <body class="col-body">
+    <header class="col-header">
+      <a class="pac-back" href="../../" aria-label="Back to games">&larr;</a>
+      <button
+        class="col-header-btn"
+        id="prev-btn"
+        type="button"
+        aria-label="Previous stencil"
+      >
+        &#9664;
+      </button>
+      <div class="col-title" id="stencil-name">Dinosaur</div>
+      <button
+        class="col-header-btn"
+        id="next-btn"
+        type="button"
+        aria-label="Next stencil"
+      >
+        &#9654;
+      </button>
+      <button
+        class="col-header-btn col-header-btn--clear"
+        id="clear-btn"
+        type="button"
+        aria-label="Clear all fills"
+      >
+        &#8634;
+      </button>
+    </header>
+
+    <main class="col-main">
+      <div class="col-stage" id="stage"></div>
+    </main>
+
+    <footer class="col-footer">
+      <div class="col-palette" id="palette"></div>
+      <div class="col-tools">
+        <button
+          class="col-tool"
+          id="tool-fill"
+          type="button"
+          data-tool="fill"
+          aria-pressed="true"
+        >
+          Fill
+        </button>
+        <button
+          class="col-tool"
+          id="tool-erase"
+          type="button"
+          data-tool="erase"
+          aria-pressed="false"
+        >
+          Erase
+        </button>
+      </div>
+    </footer>
+
+    <script type="module" src="./colouring.js"></script>
+  </body>
+</html>
