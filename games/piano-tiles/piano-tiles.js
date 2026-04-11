@@ -63,8 +63,15 @@ const MELODIES = [
   {
     name: 'Ode to Joy',
     notes: [
+      // First statement of the theme (A).
       64, 64, 65, 67, 67, 65, 64, 62,
       60, 60, 62, 64, 64, 62, 62,
+      64, 64, 65, 67, 67, 65, 64, 62,
+      60, 60, 62, 64, 62, 60, 60,
+      // Middle section (B) that leads back home.
+      62, 62, 64, 60, 62, 64, 65, 64,
+      60, 62, 64, 65, 64, 62, 60, 62,
+      // Return of the theme to close it out.
       64, 64, 65, 67, 67, 65, 64, 62,
       60, 60, 62, 64, 62, 60, 60,
     ],
@@ -74,6 +81,9 @@ const MELODIES = [
     notes: [
       60, 60, 67, 67, 69, 69, 67,
       65, 65, 64, 64, 62, 62, 60,
+      // "Up above the world so high" / "Like a diamond in the sky".
+      67, 67, 65, 65, 64, 64, 62,
+      67, 67, 65, 65, 64, 64, 62,
     ],
   },
   {
@@ -81,11 +91,15 @@ const MELODIES = [
     notes: [
       76, 75, 76, 75, 76, 71, 74, 72, 69,
       60, 64, 69, 71, 64, 68, 71, 72,
+      // The answering phrase — recurring rondo figure.
+      64, 72, 71, 69, 64, 64, 72, 71, 69,
+      76, 75, 76, 75, 76, 71, 74, 72, 69,
     ],
   },
   {
     name: 'Eine kleine Nachtmusik',
     notes: [
+      67, 62, 67, 62, 67, 62, 67, 71, 74, 72, 71, 69, 67,
       67, 62, 67, 62, 67, 62, 67, 71, 74, 72, 71, 69, 67,
     ],
   },
@@ -94,18 +108,24 @@ const MELODIES = [
     notes: [
       76, 76, 76, 71, 71, 71, 76, 76, 76, 71, 71, 71,
       76, 79, 78, 76, 75, 76, 71,
+      76, 76, 76, 71, 71, 71, 76, 76, 76, 71, 71, 71,
+      76, 79, 78, 76, 75, 76, 71,
     ],
   },
   {
     name: 'Swan Lake',
     notes: [
       71, 69, 68, 69, 71, 73, 74, 73, 71, 69, 68, 69, 71,
+      // Rising restatement — the theme climbs before settling back.
+      73, 75, 76, 74, 73, 71, 74, 73, 71, 69, 68, 69, 71,
     ],
   },
   {
     name: 'Dance of the Reed Flutes',
     notes: [
       74, 76, 78, 76, 74, 76, 78, 76, 74, 74, 76, 78,
+      // Higher echo of the phrase.
+      78, 81, 79, 78, 76, 78, 81, 79, 78, 76, 78, 74,
     ],
   },
   {
@@ -113,11 +133,16 @@ const MELODIES = [
     notes: [
       67, 67, 67, 64, 60, 67, 67, 67, 64, 60,
       67, 67, 67, 72, 67, 64, 60,
+      67, 67, 67, 64, 60, 67, 67, 67, 64, 60,
+      72, 72, 72, 72, 67, 64, 60,
     ],
   },
   {
     name: 'Canon in D',
     notes: [
+      // Pachelbel's ground bass — the piece is built from repetitions of
+      // this figure, so doubling it is literally what the original does.
+      74, 69, 71, 66, 67, 62, 67, 69,
       74, 69, 71, 66, 67, 62, 67, 69,
     ],
   },
