@@ -3,7 +3,9 @@
 // Design:
 //   • 4 coloured columns, one tile visible per lane at a time.
 //   • Tap the tile as it falls through the tap zone at the bottom.
-//   • Each column plays a distinct piano note via WebAudio.
+//   • Each tap plays the next note of a classical melody. Once a melody
+//     finishes, the next one begins — so the player "performs" recognisable
+//     pieces (Ode to Joy, Für Elise, Spring from Four Seasons, etc.).
 //   • 3 hearts — lose one per missed tile (tile exits bottom untouched).
 //   • Slow start speed that gently increases every 8 tiles.
 //   • Very generous hit window so a 4-year-old can succeed.
@@ -18,8 +20,10 @@ const TILE_W = W / COLS;      // 90 px per column
 const TILE_H = 130;           // tall so they're easy to hit
 const GAP = 6;                // gap between tile and column edge
 
-// Tile is hittable once its bottom crosses this y (generous — bottom 65 %).
-const HIT_ENTRY_Y = H * 0.35;
+// Visible "tap here" line. Tile is hittable once its bottom has reached
+// (or passed) this y — so the tile visibly touches the line before it's
+// valid to tap. Kids can see exactly when to act.
+const LINE_Y = H * 0.55;      // 352 px from top
 // Miss: tile top passes this y (a little below the bottom edge).
 const MISS_Y = H + TILE_H * 0.25;
 
@@ -33,14 +37,85 @@ const SPAWN_INTERVAL_PX = TILE_H * 1.85;
 
 const LIVES = 3;
 
-// Colours and notes per column (C4, E4, G4, C5 — pleasing chord).
+// Colours per column (visual only now; the note played comes from the
+// current classical melody).
 const COL_COLORS  = ['#ff77c6', '#ffd600', '#4fe3ff', '#8aff80'];
 const COL_SHADOW  = ['#c2005a', '#c79a00', '#0097b8', '#2d9900'];
-const COL_NOTES   = [261.63, 329.63, 392.00, 523.25];
 
-// Tap-zone stripe at the bottom of the canvas.
-const ZONE_H = 110;
-const ZONE_Y = H - ZONE_H;
+// Pulse timer for the tap line's glow.
+let linePulse = 0;
+
+// ── Classical melodies ─────────────────────────────────────────────────────
+// Each note is a MIDI note number (60 = middle C). Kids "play" each melody
+// one note per tap; when the list runs out we advance to the next piece.
+
+const MELODIES = [
+  {
+    name: 'Ode to Joy',
+    notes: [
+      64, 64, 65, 67, 67, 65, 64, 62,
+      60, 60, 62, 64, 64, 62, 62,
+      64, 64, 65, 67, 67, 65, 64, 62,
+      60, 60, 62, 64, 62, 60, 60,
+    ],
+  },
+  {
+    name: 'Twinkle Twinkle',
+    notes: [
+      60, 60, 67, 67, 69, 69, 67,
+      65, 65, 64, 64, 62, 62, 60,
+    ],
+  },
+  {
+    name: 'Für Elise',
+    notes: [
+      76, 75, 76, 75, 76, 71, 74, 72, 69,
+      60, 64, 69, 71, 64, 68, 71, 72,
+    ],
+  },
+  {
+    name: 'Eine kleine Nachtmusik',
+    notes: [
+      67, 62, 67, 62, 67, 62, 67, 71, 74, 72, 71, 69, 67,
+    ],
+  },
+  {
+    name: 'Spring (Vivaldi)',
+    notes: [
+      76, 76, 76, 71, 71, 71, 76, 76, 76, 71, 71, 71,
+      76, 79, 78, 76, 75, 76, 71,
+    ],
+  },
+  {
+    name: 'Swan Lake',
+    notes: [
+      71, 69, 68, 69, 71, 73, 74, 73, 71, 69, 68, 69, 71,
+    ],
+  },
+  {
+    name: 'Dance of the Reed Flutes',
+    notes: [
+      74, 76, 78, 76, 74, 76, 78, 76, 74, 74, 76, 78,
+    ],
+  },
+  {
+    name: 'William Tell',
+    notes: [
+      67, 67, 67, 64, 60, 67, 67, 67, 64, 60,
+      67, 67, 67, 72, 67, 64, 60,
+    ],
+  },
+  {
+    name: 'Canon in D',
+    notes: [
+      74, 69, 71, 66, 67, 62, 67, 69,
+    ],
+  },
+];
+
+function midiToHz(m) {
+  return 440 * Math.pow(2, (m - 69) / 12);
+}
 
 // ── DOM refs ───────────────────────────────────────────────────────────────
 
@@ -128,6 +203,9 @@ let prevCol;     // avoid spawning same column twice in a row
 let particles;   // hit-burst particles
 let gameOverTimer;
 let shakeTimer;  // screen-shake on miss
+let melodyIdx;   // which melody we're currently "playing"
+let noteIdx;     // position inside that melody
+let melodyBannerTimer; // seconds remaining for the melody-name flash
 
 function newGame() {
   tiles       = [];
@@ -141,6 +219,10 @@ function newGame() {
   particles   = [];
   gameOverTimer = 0;
   shakeTimer  = 0;
+  // Start each game on a random melody so it feels fresh.
+  melodyIdx   = Math.floor(Math.random() * MELODIES.length);
+  noteIdx     = 0;
+  melodyBannerTimer = 2.2;
 
   overlay.hidden = true;
   scoreEl.textContent = '0';
@@ -198,11 +280,11 @@ function burst(cx, cy, color) {
 
 function tryHit(col) {
   // Find the lowest falling tile in this column that's hittable.
+  // Hittable = tile's bottom has reached or passed the tap line.
   let best = null;
   for (const t of tiles) {
     if (t.col !== col || t.state !== 'falling') continue;
-    const bottom = t.y + TILE_H;
-    if (bottom < HIT_ENTRY_Y) continue; // not far enough down yet
+    if (t.y + TILE_H < LINE_Y) continue; // not touching the line yet
     if (!best || t.y > best.y) best = t;
   }
   if (!best) return false;
@@ -220,8 +302,17 @@ function tryHit(col) {
     speed = Math.min(speed + SPEED_STEP, MAX_SPEED);
   }
 
-  // Play note and burst.
-  playNote(COL_NOTES[col]);
+  // Play the next note from the current classical melody.
+  const melody = MELODIES[melodyIdx];
+  playNote(midiToHz(melody.notes[noteIdx]));
+  noteIdx++;
+  if (noteIdx >= melody.notes.length) {
+    // Advance to the next piece and flash its name.
+    melodyIdx = (melodyIdx + 1) % MELODIES.length;
+    noteIdx = 0;
+    melodyBannerTimer = 2.2;
+  }
+
   const cx = col * TILE_W + TILE_W / 2;
   const cy = best.y + TILE_H / 2;
   burst(cx, cy, COL_COLORS[col]);
@@ -314,6 +405,8 @@ function update(dt) {
   updateParticles(dt);
 
   if (shakeTimer > 0) shakeTimer -= dt;
+  if (melodyBannerTimer > 0) melodyBannerTimer -= dt;
+  linePulse += dt;
 }
 
 function updateParticles(dt) {
@@ -355,25 +448,17 @@ function render() {
     ctx.stroke();
   }
 
-  // Tap zone — glowing band at the bottom.
-  const zoneGrad = ctx.createLinearGradient(0, ZONE_Y - 20, 0, H);
-  zoneGrad.addColorStop(0, 'rgba(255,255,255,0)');
-  zoneGrad.addColorStop(1, 'rgba(255,255,255,0.05)');
-  ctx.fillStyle = zoneGrad;
-  ctx.fillRect(0, ZONE_Y - 20, W, H - ZONE_Y + 20);
-
-  // Tap zone top line.
-  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, ZONE_Y);
-  ctx.lineTo(W, ZONE_Y);
-  ctx.stroke();
+  // Tap line — a bright pulsing "tap here" line. Tiles are hittable once
+  // their bottom edge has reached or passed this line.
+  drawTapLine();
 
   // Tiles.
   for (const t of tiles) {
     drawTile(t);
   }
+
+  // Melody title banner (drawn on top of tiles so it stays legible).
+  drawMelodyBanner();
 
   // Particles.
   for (const p of particles) {
@@ -385,6 +470,65 @@ function render() {
   }
   ctx.globalAlpha = 1;
 
+  ctx.restore();
+}
+
+function drawTapLine() {
+  // Soft pulsing opacity so it catches the eye.
+  const pulse = 0.65 + Math.sin(linePulse * 3.2) * 0.25;
+
+  // Glow underlay.
+  ctx.save();
+  ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+  ctx.shadowBlur = 18;
+  ctx.strokeStyle = `rgba(255, 255, 255, ${pulse})`;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(0, LINE_Y);
+  ctx.lineTo(W, LINE_Y);
+  ctx.stroke();
+  ctx.restore();
+
+  // Down-pointing arrows above the line, one per column, inviting the kid
+  // to tap each lane when a tile reaches it.
+  ctx.save();
+  ctx.fillStyle = `rgba(255, 255, 255, ${0.45 * pulse + 0.15})`;
+  for (let c = 0; c < COLS; c++) {
+    const cx = c * TILE_W + TILE_W / 2;
+    const tipY = LINE_Y - 10;
+    ctx.beginPath();
+    ctx.moveTo(cx, tipY);
+    ctx.lineTo(cx - 9, tipY - 14);
+    ctx.lineTo(cx + 9, tipY - 14);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawMelodyBanner() {
+  const name = MELODIES[melodyIdx].name;
+
+  // Normal steady label: small, centred near the top.
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (melodyBannerTimer > 0) {
+    // Flash: fade in for first 0.25s, hold, fade out over last 0.5s.
+    const t = melodyBannerTimer;
+    const hold = Math.max(0, Math.min(1, t / 2.0));
+    ctx.font = 'bold 26px -apple-system, BlinkMacSystemFont, system-ui, sans-serif';
+    // Drop shadow for legibility over tiles.
+    ctx.fillStyle = `rgba(0, 0, 0, ${0.5 * hold})`;
+    ctx.fillText(name, W / 2 + 2, 40 + 2);
+    ctx.fillStyle = `rgba(255, 214, 0, ${hold})`;
+    ctx.fillText(name, W / 2, 40);
+  } else {
+    ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.fillText(name, W / 2, 22);
+  }
   ctx.restore();
 }
 
