@@ -1,26 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Games</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
-    h1 { font-size: 2rem; margin-bottom: 1rem; }
-    .games { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; width: 100%; max-width: 800px; margin-top: 1rem; }
-    .games a { display: block; padding: 2rem; background: #16213e; border-radius: 12px; text-decoration: none; color: #eee; text-align: center; font-size: 1.2rem; transition: transform 0.15s; }
-    .games a:hover { transform: scale(1.05); background: #0f3460; }
-    .empty { color: #666; margin-top: 2rem; }
-  </style>
-</head>
-<body>
-  <h1>🎮 Games</h1>
-  <p class="empty">No games yet — coming soon!</p>
-  <!-- Add game links here as they're created:
-  <div class="games">
-    <a href="/game-name/">🕹️ Game Name</a>
-  </div>
-  -->
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#0b1026" />
+    <title>Games</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="hub">
+      <h1 class="hub__title">Games</h1>
+      <p class="hub__subtitle">Tap a game to play</p>
+
+      <ul class="tiles">
+        <li>
+          <a class="tile tile--pacman" href="./games/pacman/">
+            <span class="tile__art" aria-hidden="true">
+              <span class="pac"></span>
+            </span>
+            <span class="tile__label">Pac-Man</span>
+          </a>
+        </li>
+      </ul>
+    </main>
+    <script src="./app.js"></script>
+  </body>
 </html>
