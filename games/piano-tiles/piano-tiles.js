@@ -27,10 +27,20 @@ const LINE_Y = H * 0.55;      // 352 px from top
 // Miss: tile top passes this y (a little below the bottom edge).
 const MISS_Y = H + TILE_H * 0.25;
 
-const START_SPEED  = 190;   // px / s
-const SPEED_STEP   = 14;    // added every TILES_PER_STEP tiles tapped
-const TILES_PER_STEP = 8;
-const MAX_SPEED    = 520;
+// Difficulty presets — chosen from the settings modal and persisted in
+// localStorage. Each preset tunes the speed ramp:
+//   startSpeed:    initial tile fall speed in px/s
+//   speedStep:     px/s added every `tilesPerStep` successful taps
+//   tilesPerStep:  how many taps between speed bumps
+//   maxSpeed:      cap on the fall speed
+const DIFFICULTIES = {
+  easy:   { label: 'Easy',   startSpeed: 170, speedStep: 10, tilesPerStep: 8, maxSpeed: 330 },
+  normal: { label: 'Normal', startSpeed: 200, speedStep: 20, tilesPerStep: 5, maxSpeed: 560 },
+  fast:   { label: 'Fast',   startSpeed: 240, speedStep: 30, tilesPerStep: 4, maxSpeed: 720 },
+  crazy:  { label: 'Crazy',  startSpeed: 280, speedStep: 40, tilesPerStep: 3, maxSpeed: 900 },
+};
+const DEFAULT_DIFFICULTY = 'normal';
+const DIFF_KEY = 'piano-tiles.difficulty';
 
 // Space between consecutive tile tops (px). As speed rises, tiles come faster.
 const SPAWN_INTERVAL_PX = TILE_H * 1.85;
@@ -128,6 +138,10 @@ const overlay   = document.getElementById('gameover');
 const titleEl   = document.getElementById('gameover-title');
 const finalEl   = document.getElementById('gameover-score');
 const againBtn  = document.getElementById('again');
+const settingsBtn   = document.getElementById('settings-btn');
+const settingsEl    = document.getElementById('settings');
+const settingsClose = document.getElementById('settings-close');
+const diffBtnsEl    = document.getElementById('diff-btns');
 
 // ── Canvas setup ───────────────────────────────────────────────────────────
 
@@ -194,6 +208,18 @@ function setBest(n) {
   try { localStorage.setItem(BEST_KEY, String(n)); } catch { /* */ }
 }
 
+function loadDifficulty() {
+  try {
+    const v = localStorage.getItem(DIFF_KEY);
+    return DIFFICULTIES[v] ? v : DEFAULT_DIFFICULTY;
+  } catch { return DEFAULT_DIFFICULTY; }
+}
+function saveDifficulty(k) {
+  try { localStorage.setItem(DIFF_KEY, k); } catch { /* */ }
+}
+
+let currentDiff = loadDifficulty();
+
 // ── Game state ──────────────────────────────────────────────────────────────
 
 let tiles, score, lives, speed, status;
@@ -208,10 +234,11 @@ let noteIdx;     // position inside that melody
 let melodyBannerTimer; // seconds remaining for the melody-name flash
 
 function newGame() {
+  const diff = DIFFICULTIES[currentDiff];
   tiles       = [];
   score       = 0;
   lives       = LIVES;
-  speed       = START_SPEED;
+  speed       = diff.startSpeed;
   status      = 'playing';
   spawnOffset = 0;
   tilesHit    = 0;
@@ -297,9 +324,10 @@ function tryHit(col) {
   if (score > getBest()) setBest(score);
   bestEl.textContent = String(getBest());
 
-  // Speed bump every TILES_PER_STEP tiles.
-  if (tilesHit % TILES_PER_STEP === 0) {
-    speed = Math.min(speed + SPEED_STEP, MAX_SPEED);
+  // Speed bump every `tilesPerStep` tiles, from the chosen difficulty.
+  const diff = DIFFICULTIES[currentDiff];
+  if (tilesHit % diff.tilesPerStep === 0) {
+    speed = Math.min(speed + diff.speedStep, diff.maxSpeed);
   }
 
   // Play the next note from the current classical melody.
@@ -345,6 +373,43 @@ canvas.addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 againBtn.addEventListener('click', newGame);
+
+// ── Settings modal ─────────────────────────────────────────────────────────
+
+function syncDiffButtons() {
+  for (const btn of diffBtnsEl.querySelectorAll('[data-diff]')) {
+    btn.dataset.selected = btn.dataset.diff === currentDiff ? 'true' : 'false';
+  }
+}
+syncDiffButtons();
+
+function openSettings() {
+  syncDiffButtons();
+  settingsEl.hidden = false;
+}
+function closeSettings() {
+  settingsEl.hidden = true;
+}
+
+settingsBtn.addEventListener('click', openSettings);
+settingsClose.addEventListener('click', closeSettings);
+settingsEl.addEventListener('click', (e) => {
+  // Click on the dimmed backdrop (but not the card) closes the modal.
+  if (e.target === settingsEl) closeSettings();
+});
+
+diffBtnsEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-diff]');
+  if (!btn) return;
+  const key = btn.dataset.diff;
+  if (!DIFFICULTIES[key]) return;
+  currentDiff = key;
+  saveDifficulty(key);
+  syncDiffButtons();
+  // Restart so the new speed takes effect immediately.
+  newGame();
+  closeSettings();
+});
 
 // ── Game loop ────────────────────────────────────────────────────────────────
 

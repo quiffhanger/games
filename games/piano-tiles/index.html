@@ -17,6 +17,14 @@
   <body class="pt-body">
     <header class="pt-header">
       <a class="pac-back" href="../../" aria-label="Back to games">&larr;</a>
+      <button
+        class="pt-settings-btn"
+        id="settings-btn"
+        type="button"
+        aria-label="Settings"
+      >
+        &#9881;
+      </button>
       <div class="pt-lives" id="lives" aria-label="Lives"></div>
       <div class="pt-score-wrap">
         <span class="pac-score">
@@ -44,6 +52,21 @@
         </div>
       </div>
     </main>
+
+    <div class="pt-settings" id="settings" hidden>
+      <div class="pt-settings__card">
+        <div class="pt-settings__title">Speed</div>
+        <div class="pt-settings__btns" id="diff-btns">
+          <button type="button" data-diff="easy">Easy</button>
+          <button type="button" data-diff="normal">Normal</button>
+          <button type="button" data-diff="fast">Fast</button>
+          <button type="button" data-diff="crazy">Crazy</button>
+        </div>
+        <button class="pt-settings__close" id="settings-close" type="button">
+          Done
+        </button>
+      </div>
+    </div>
 
     <script type="module" src="./piano-tiles.js"></script>
   </body>
