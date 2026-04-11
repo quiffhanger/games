@@ -34,12 +34,29 @@ export class GamesStack extends cdk.Stack {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
+    // Rewrite /dir/ → /dir/index.html for S3
+    const rewriteFn = new cloudfront.Function(this, 'RewriteFn', {
+      code: cloudfront.FunctionCode.fromInline(`
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+          if (uri.endsWith('/')) { request.uri += 'index.html'; }
+          else if (!uri.includes('.')) { request.uri += '/index.html'; }
+          return request;
+        }
+      `),
+    });
+
     // CloudFront distribution
     const distribution = new cloudfront.Distribution(this, 'CDN', {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        functionAssociations: [{
+          function: rewriteFn,
+          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+        }],
       },
       defaultRootObject: 'index.html',
       domainNames: [domainName],
