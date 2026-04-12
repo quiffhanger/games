@@ -66,10 +66,29 @@
   display: none;
 }
 
+.pac-lives {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pac-lives:empty {
+  display: none;
+}
+
+.pac-life {
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
 .pac-scores {
   margin-left: auto;
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 .pac-score {
@@ -130,6 +149,49 @@
 }
 
 /* Win overlay uses the shared .pac-win rules in styles.css. */
+
+/* ---- Overlay subtitle + difficulty buttons ---- */
+.pac-overlay__sub {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+  color: var(--fg);
+  opacity: 0.75;
+}
+
+.pac-overlay__sub[hidden] {
+  display: none;
+}
+
+.pac-diff {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.pac-diff-btn {
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.pac-diff-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.pac-diff-btn--active {
+  background: var(--accent);
+  color: #222;
+  border-color: #fff6b0;
+}
 
 /* --- D-pad shared -------------------------------------------------- */
 .dpad {

@@ -10,7 +10,7 @@
 
 const RAW_MAZE = [
   '#############',
-  '#...........#',
+  '#o.........o#',
   '#.##.###.##.#',
   '#.#.......#.#',
   '#.#.##.##.#.#',
@@ -18,7 +18,7 @@ const RAW_MAZE = [
   '#.#.##.##.#.#',
   '#.#.......#.#',
   '#.##.###.##.#',
-  '#.....P.....#',
+  '#o....P....o#',
   '#############',
 ];
 
@@ -130,15 +130,12 @@ export function drawMaze(ctx, grid, tile) {
         ctx.fillStyle = colors.dot;
         ctx.fill();
       } else if (t === TILE.BIG) {
+        const cx = c * tile + tile / 2;
+        const cy = r * tile + tile / 2;
+        const pulse = 0.18 + Math.sin(Date.now() * 0.004) * 0.04;
         ctx.beginPath();
-        ctx.arc(
-          c * tile + tile / 2,
-          r * tile + tile / 2,
-          tile * 0.22,
-          0,
-          Math.PI * 2
-        );
-        ctx.fillStyle = colors.big;
+        ctx.arc(cx, cy, tile * pulse, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
         ctx.fill();
       }
     }

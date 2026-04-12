@@ -27,8 +27,9 @@
         Tilt
       </button>
       <div class="pac-scores">
+        <div class="pac-lives" id="lives"></div>
         <span class="pac-score">
-          <span class="pac-score__label">Dots</span>
+          <span class="pac-score__label">Score</span>
           <span class="pac-score__value" id="score">0</span>
         </span>
         <span class="pac-score">
@@ -54,12 +55,22 @@
 
       <div class="pac-stage">
         <canvas id="game" width="600" height="520"></canvas>
-        <div class="pac-win" id="win" hidden>
+        <!-- Overlay: difficulty selection / win / game-over -->
+        <div class="pac-win" id="overlay" hidden>
           <div class="pac-win__card">
-            <div class="pac-win__title">Yay! You did it! 🎉</div>
-            <button class="pac-win__btn" id="again" type="button">
-              Play Again
-            </button>
+            <div class="pac-win__title" id="overlay-title">Pac-Man</div>
+            <div class="pac-overlay__sub" id="overlay-subtitle" hidden></div>
+            <div class="pac-diff" id="diff-btns">
+              <button class="pac-diff-btn" data-diff="easy" type="button">
+                Easy
+              </button>
+              <button class="pac-diff-btn" data-diff="medium" type="button">
+                Medium
+              </button>
+              <button class="pac-diff-btn" data-diff="hard" type="button">
+                Hard
+              </button>
+            </div>
           </div>
         </div>
       </div>
