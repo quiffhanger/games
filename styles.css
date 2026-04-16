@@ -207,6 +207,56 @@ body {
 .palette-dot:nth-child(5) { top: 60%;  left: 18%; }
 .palette-dot:nth-child(6) { top: 60%;  left: 46%; }
 
+/* School Run icon — a running figure on grass. */
+.tile--school-run {
+  background: linear-gradient(180deg, #87CEEB 60%, #5a9e4b 60%);
+}
+
+.tile__art--runner {
+  position: relative;
+}
+
+.runner {
+  width: 40%;
+  height: 80%;
+  position: relative;
+}
+
+/* Head */
+.runner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36%;
+  height: 28%;
+  background: #fdd9b5;
+  border-radius: 50%;
+  box-shadow:
+    0 -4px 0 0 #f0c75e,
+    -3px -5px 0 0 #f0c75e,
+    3px -5px 0 0 #f0c75e;
+}
+
+/* Body + legs */
+.runner::after {
+  content: "";
+  position: absolute;
+  top: 26%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 40%;
+  background: #2980b9;
+  border-radius: 4px;
+  box-shadow:
+    -6px 28px 0 0 #1a6b5a,
+    6px 28px 0 0 #1a6b5a,
+    -6px 38px 0 0 #333,
+    6px 38px 0 0 #333;
+}
+
 /* -------- Shared win / game-over card (used by every game) -------- */
 
 .pac-win {
