@@ -1,0 +1,142 @@
+:root {
+  --snake-green: #4fe340;
+  --snake-head: #8aff80;
+  --snake-food: #ff4f4f;
+  --snake-bg: #0b1026;
+  --snake-grid: #ffffff08;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; overflow: hidden; background: var(--snake-bg); color: #fff; font-family: system-ui, sans-serif; }
+
+.snake-body { display: flex; flex-direction: column; height: 100%; }
+
+.snake-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #ffffff08;
+  border-bottom: 1px solid #ffffff14;
+  flex-shrink: 0;
+}
+
+.snake-back {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.snake-back:hover { background: #ffffff18; }
+
+.snake-score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+}
+.snake-score-display + .snake-score-display { margin-left: 1.5rem; }
+
+.snake-score-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; }
+.snake-score-value { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.snake-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0.5rem;
+}
+
+#canvas {
+  display: block;
+  border-radius: 8px;
+  image-rendering: pixelated;
+}
+
+/* Overlay */
+.snake-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0b1026cc;
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+}
+.snake-overlay.hidden { display: none; }
+
+.snake-overlay__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: #ffffff0d;
+  border: 1px solid #ffffff18;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 280px;
+}
+
+.snake-overlay__title { font-size: 2rem; font-weight: 800; color: var(--snake-green); }
+.snake-overlay__sub { font-size: 0.85rem; opacity: 0.7; line-height: 1.5; }
+
+.snake-btn {
+  margin-top: 0.5rem;
+  padding: 0.65rem 2rem;
+  background: var(--snake-green);
+  color: #0b1026;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.snake-btn:hover { opacity: 0.85; }
+
+/* D-pad */
+.snake-dpad {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: grid;
+  grid-template-areas:
+    ". up ."
+    "left . right"
+    ". down .";
+  grid-template-columns: 48px 48px 48px;
+  grid-template-rows: 48px 48px 48px;
+  gap: 4px;
+}
+
+.snake-dpad__btn {
+  background: #ffffff14;
+  border: 1px solid #ffffff22;
+  color: #fff;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.1s;
+}
+.snake-dpad__btn:active { background: #ffffff30; }
+.snake-dpad__btn--up    { grid-area: up; }
+.snake-dpad__btn--left  { grid-area: left; }
+.snake-dpad__btn--right { grid-area: right; }
+.snake-dpad__btn--down  { grid-area: down; }
+
+/* Hide d-pad on non-touch if keyboard is likely */
+@media (hover: hover) and (pointer: fine) {
+  .snake-dpad { display: none; }
+}

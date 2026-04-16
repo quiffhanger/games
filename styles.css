@@ -207,6 +207,40 @@ body {
 .palette-dot:nth-child(5) { top: 60%;  left: 18%; }
 .palette-dot:nth-child(6) { top: 60%;  left: 46%; }
 
+/* Snake tile */
+.tile--snake {
+  background: linear-gradient(135deg, #0b2b0b 0%, #0b1a0b 100%);
+}
+
+.tile__art--snake {
+  position: relative;
+  width: 60%;
+  height: 60%;
+}
+
+.snake-icon {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  width: 100%;
+  height: 100%;
+  gap: 3px;
+}
+
+.snake-icon__seg {
+  background: #4fe340;
+  border-radius: 3px;
+}
+
+.snake-icon__seg--head {
+  background: #8aff80;
+}
+
+.snake-icon__food {
+  background: #ff4f4f;
+  border-radius: 50%;
+}
+
 /* School Run icon — a running figure on grass. */
 .tile--school-run {
   background: linear-gradient(180deg, #87CEEB 60%, #5a9e4b 60%);

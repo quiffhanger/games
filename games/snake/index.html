@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#0b1026" />
+    <title>Snake</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="icon" href="../../icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../../icons/icon-192.png" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="./snake.css" />
+  </head>
+  <body class="snake-body">
+    <header class="snake-header">
+      <a class="snake-back" href="../../" aria-label="Back to games">&larr;</a>
+      <div class="snake-score-display">
+        <span class="snake-score-label">Score</span>
+        <span class="snake-score-value" id="score">0</span>
+      </div>
+      <div class="snake-score-display">
+        <span class="snake-score-label">Best</span>
+        <span class="snake-score-value" id="best">0</span>
+      </div>
+    </header>
+
+    <main class="snake-main">
+      <canvas id="canvas"></canvas>
+
+      <div class="snake-overlay" id="overlay">
+        <div class="snake-overlay__box">
+          <div class="snake-overlay__title" id="overlay-title">Snake</div>
+          <div class="snake-overlay__sub" id="overlay-sub">Eat the food. Don't hit the walls or yourself.</div>
+          <button class="snake-btn" id="start-btn">Start</button>
+        </div>
+      </div>
+
+      <div class="snake-dpad" id="dpad" aria-hidden="true">
+        <button class="snake-dpad__btn snake-dpad__btn--up"   data-dir="UP">▲</button>
+        <button class="snake-dpad__btn snake-dpad__btn--left" data-dir="LEFT">◀</button>
+        <button class="snake-dpad__btn snake-dpad__btn--right" data-dir="RIGHT">▶</button>
+        <button class="snake-dpad__btn snake-dpad__btn--down"  data-dir="DOWN">▼</button>
+      </div>
+    </main>
+
+    <script src="./snake.js"></script>
+  </body>
+</html>
