@@ -291,6 +291,42 @@ body {
     6px 38px 0 0 #333;
 }
 
+/* Security Invaders tile — a pixel-style invader. */
+.tile--invaders {
+  background: linear-gradient(160deg, #141b3d 0%, #1e0b2e 100%);
+}
+
+.tile__art--invaders {
+  align-items: center;
+  justify-content: center;
+}
+
+.invader {
+  position: relative;
+  width: 80%;
+  height: 64%;
+  background: #4fe3ff;
+  clip-path: polygon(
+    22% 0, 78% 0, 78% 15%, 92% 15%, 92% 40%,
+    100% 40%, 100% 70%, 78% 70%, 78% 85%, 92% 85%,
+    92% 100%, 68% 100%, 68% 85%, 32% 85%, 32% 100%,
+    8% 100%, 8% 85%, 22% 85%, 22% 70%, 0 70%,
+    0 40%, 8% 40%, 8% 15%, 22% 15%
+  );
+  filter: drop-shadow(0 0 6px rgba(79, 227, 255, 0.55));
+}
+
+.invader__eye {
+  position: absolute;
+  top: 28%;
+  width: 12%;
+  height: 16%;
+  background: #0b1026;
+  border-radius: 2px;
+}
+.invader__eye--l { left: 28%; }
+.invader__eye--r { right: 28%; }
+
 /* -------- Shared win / game-over card (used by every game) -------- */
 
 .pac-win {
