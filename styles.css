@@ -242,7 +242,8 @@ body {
 }
 
 /* School Run icon — a running figure on grass. */
-.tile--school-run {
+.tile--school-run,
+.tile--platformer {
   background: linear-gradient(180deg, #87CEEB 60%, #5a9e4b 60%);
 }
 

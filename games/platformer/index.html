@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#8ecbff" />
+    <title>The School Run</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="icon" href="../../icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../../icons/icon-192.png" />
+    <link rel="stylesheet" href="./platformer.css" />
+  </head>
+  <body class="pf-body">
+    <div class="pf-root" id="root">
+      <canvas id="game"></canvas>
+
+      <header class="pf-hud pf-hud--hidden" id="hud">
+        <a class="pf-back" href="../../" aria-label="Back to games">&larr;</a>
+        <div class="pf-hud__lives" id="hud-lives"></div>
+        <div class="pf-hud__score" id="hud-score"></div>
+        <div class="pf-hud__power" id="hud-power"></div>
+      </header>
+
+      <div class="pf-controls pf-controls--hidden" id="controls">
+        <div class="pf-pad pf-pad--left">
+          <button class="pf-btn pf-btn--move" data-ctrl="left" aria-label="Left">&#9664;</button>
+          <button class="pf-btn pf-btn--move" data-ctrl="right" aria-label="Right">&#9654;</button>
+        </div>
+        <div class="pf-pad pf-pad--right">
+          <button class="pf-btn pf-btn--action" data-ctrl="action" aria-label="Action">&#9995;</button>
+          <button class="pf-btn pf-btn--jump" data-ctrl="jump" aria-label="Jump">&#9650;</button>
+        </div>
+      </div>
+
+      <div class="pf-menu" id="menu"></div>
+
+      <div class="pf-rotate" id="rotate">
+        <div class="pf-rotate__icon">&#8635;</div>
+        <div>Rotate to landscape<br>to play!</div>
+      </div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

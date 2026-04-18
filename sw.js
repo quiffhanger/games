@@ -1,6 +1,6 @@
 // Service worker: simple versioned cache-first strategy.
 // Bump CACHE_VERSION whenever you ship new files so clients pick them up.
-const CACHE_VERSION = 'v13';
+const CACHE_VERSION = 'v14';
 const CACHE_NAME = `kids-games-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -42,6 +42,12 @@ const PRECACHE_URLS = [
   './games/space-invaders/index.html',
   './games/space-invaders/space-invaders.css',
   './games/space-invaders/space-invaders.js',
+  './games/platformer/',
+  './games/platformer/index.html',
+  './games/platformer/platformer.css',
+  './games/platformer/main.js',
+  './games/platformer/level.js',
+  './games/platformer/characters.js',
 ];
 
 self.addEventListener('install', (event) => {
