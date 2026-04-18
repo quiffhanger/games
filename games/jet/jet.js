@@ -11,12 +11,20 @@ const W = 800;
 const H = 450;
 
 // ── Difficulty ─────────────────────────────────────────────────────────────
+//
+// mountainEvery = seconds between mountain spawns at t=0. Every 60s the
+// spawn interval shrinks by 5% (i.e. ~5% more mountains per minute), which
+// compounds slowly — a full minute of gentle play before any change is felt.
+// balloonEvery is constant.
 
 const DIFFICULTY = {
-  easy:   { scroll:  40, mountainEvery: 2.6, balloonEvery: 1.8, jetSpeed: 180 },
-  medium: { scroll: 100, mountainEvery: 1.6, balloonEvery: 1.3, jetSpeed: 260 },
-  hard:   { scroll: 180, mountainEvery: 1.0, balloonEvery: 1.0, jetSpeed: 340 },
+  easy:   { scroll:  40, mountainEvery: 9.0, balloonEvery: 1.8, jetSpeed: 180 },
+  medium: { scroll: 100, mountainEvery: 5.5, balloonEvery: 1.3, jetSpeed: 260 },
+  hard:   { scroll: 180, mountainEvery: 3.5, balloonEvery: 1.0, jetSpeed: 340 },
 };
+
+const MOUNTAIN_RAMP_PER_MIN = 0.05; // 5% more mountains every minute
+const MOUNTAIN_INTERVAL_MIN = 0.6;  // safety floor (seconds)
 
 // ── Tunables ───────────────────────────────────────────────────────────────
 
@@ -60,6 +68,7 @@ const state = {
   lastShotAt: 0,
   lastMountain: 0,
   lastBalloon: 0,
+  elapsed: 0,
 };
 
 bestEl.textContent = state.best;
@@ -193,6 +202,7 @@ function startGame(diffKey) {
   state.lastShotAt = 0;
   state.lastMountain = 0;
   state.lastBalloon = 0;
+  state.elapsed = 0;
   scoreEl.textContent = 0;
   startOv.hidden = true;
   gameOverOv.hidden = true;
@@ -310,10 +320,17 @@ function tick(dt) {
     // World scroll
     const s = state.diff.scroll;
     state.worldY += s * dt;
+    state.elapsed += dt;
 
-    // Mountains
+    // Mountains — spawn interval shrinks 5% per elapsed minute (compounded).
+    const minutes = state.elapsed / 60;
+    const rampFactor = Math.pow(1 - MOUNTAIN_RAMP_PER_MIN, minutes);
+    const interval = Math.max(
+      MOUNTAIN_INTERVAL_MIN,
+      state.diff.mountainEvery * rampFactor,
+    );
     state.lastMountain += dt;
-    if (state.lastMountain >= state.diff.mountainEvery) {
+    if (state.lastMountain >= interval) {
       state.lastMountain = 0;
       spawnMountain();
     }
