@@ -1,6 +1,6 @@
 // Service worker: simple versioned cache-first strategy.
 // Bump CACHE_VERSION whenever you ship new files so clients pick them up.
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `kids-games-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -24,6 +24,12 @@ const PRECACHE_URLS = [
   './games/piano-tiles/index.html',
   './games/piano-tiles/piano-tiles.css',
   './games/piano-tiles/piano-tiles.js',
+  './games/platformer/',
+  './games/platformer/index.html',
+  './games/platformer/platformer.css',
+  './games/platformer/main.js',
+  './games/platformer/level.js',
+  './games/platformer/characters.js',
 ];
 
 self.addEventListener('install', (event) => {
