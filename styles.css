@@ -164,3 +164,42 @@ body {
 .piano-key:nth-child(2) { height: 100%; }
 .piano-key:nth-child(3) { height: 85%; }
 .piano-key:nth-child(4) { height: 60%; }
+
+/* Jet tile — sky gradient background + CSS fighter-jet silhouette. */
+.tile--jet {
+  background: linear-gradient(160deg, #7bc0ff 0%, #4fe3ff 55%, #b6deff 100%);
+  color: #14213d;
+}
+
+.jet-art {
+  position: relative;
+  width: 80%;
+  height: 80%;
+}
+
+.jet-art::before {
+  /* Fuselage */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 16%;
+  height: 84%;
+  background: #eef2f8;
+  border-radius: 40% 40% 30% 30% / 30% 30% 20% 20%;
+  transform: translateX(-50%);
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.15);
+}
+
+.jet-art::after {
+  /* Wings */
+  content: "";
+  position: absolute;
+  left: 10%;
+  top: 55%;
+  width: 80%;
+  height: 18%;
+  background: #eef2f8;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+}

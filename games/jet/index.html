@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#0b1026" />
+    <title>Jet</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="icon" href="../../icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../../icons/icon-192.png" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="./jet.css" />
+  </head>
+  <body class="jet-body">
+    <header class="jet-header">
+      <a class="pac-back" href="../../" aria-label="Back to games">&larr;</a>
+      <div class="jet-score-wrap">
+        <span class="pac-score">
+          <span class="pac-score__label">Score</span>
+          <span class="pac-score__value" id="score">0</span>
+        </span>
+        <span class="pac-score">
+          <span class="pac-score__label">Best</span>
+          <span class="pac-score__value" id="best">0</span>
+        </span>
+      </div>
+    </header>
+
+    <main class="jet-main">
+      <div class="jet-stage">
+        <canvas id="game"></canvas>
+
+        <div class="jet-start" id="start">
+          <div class="jet-start__card">
+            <div class="jet-start__title">Fly the Jet</div>
+            <div class="jet-start__subtitle">
+              Tilt your phone to steer. Tap to shoot balloons. Dodge mountains!
+            </div>
+            <div class="jet-start__btns">
+              <button class="jet-diff-btn jet-diff-btn--easy" data-diff="easy" type="button">Easy</button>
+              <button class="jet-diff-btn jet-diff-btn--medium" data-diff="medium" type="button">Medium</button>
+              <button class="jet-diff-btn jet-diff-btn--hard" data-diff="hard" type="button">Hard</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pac-win" id="gameover" hidden>
+          <div class="pac-win__card">
+            <div class="pac-win__title">Crashed!</div>
+            <div class="jet-final-score" id="gameover-score"></div>
+            <button class="pac-win__btn" id="again" type="button">Play Again</button>
+          </div>
+        </div>
+
+        <div class="jet-rotate" id="rotate" hidden>
+          <div class="jet-rotate__card">
+            <div class="jet-rotate__icon" aria-hidden="true">&#x21BB;</div>
+            <div class="jet-rotate__text">Rotate your phone<br />to landscape</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="./jet.js"></script>
+  </body>
+</html>
