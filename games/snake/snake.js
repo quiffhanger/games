@@ -15,7 +15,7 @@ let cellSize, snake, dir, nextDir, food, score, best, running, rafId, lastTick;
 
 function resize() {
   const main = canvas.parentElement;
-  const dpadSpace = window.matchMedia('(hover: none), (pointer: coarse)').matches ? 160 : 0;
+  const dpadSpace = window.matchMedia('(hover: none), (pointer: coarse)').matches ? 200 : 0;
   const size = Math.min(main.clientWidth - 16, main.clientHeight - 16 - dpadSpace);
   cellSize = Math.floor(size / COLS);
   canvas.width = cellSize * COLS;

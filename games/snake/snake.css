@@ -57,6 +57,7 @@ html, body { height: 100%; overflow: hidden; background: var(--snake-bg); color:
   display: block;
   border-radius: 8px;
   image-rendering: pixelated;
+  border: 1px solid #ffffff20;
 }
 
 /* Overlay */
@@ -106,7 +107,8 @@ html, body { height: 100%; overflow: hidden; background: var(--snake-bg); color:
 .snake-dpad {
   position: absolute;
   bottom: 1.5rem;
-  right: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   display: grid;
   grid-template-areas:
     ". up ."
