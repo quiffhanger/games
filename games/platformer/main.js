@@ -212,7 +212,7 @@ function update(now) {
   const maxSpeed = (activePower === 'carrot' ? 5.5 : 3.5) * dt;
   const friction = 0.82;
   const gravity = diff.gravity * dt;
-  const jumpV = (activePower === 'banana' ? diff.jumpV * 1.4 : diff.jumpV) * dt;
+  const jumpV = activePower === 'banana' ? diff.jumpV * 1.4 : diff.jumpV;
 
   if (isLeft())  { player.vx -= accel; player.facing = -1; }
   if (isRight()) { player.vx += accel; player.facing = 1; }
@@ -221,7 +221,7 @@ function update(now) {
   player.vx = clamp(player.vx, -maxSpeed, maxSpeed);
 
   player.vy += gravity;
-  if (player.vy > 12 * dt) player.vy = 12 * dt;
+  if (player.vy > 12) player.vy = 12;
 
   // Jump with coyote time + buffer
   if (isJump()) player.jumpBufferTime = now;
@@ -266,7 +266,7 @@ function update(now) {
     if (player.vy > 0 &&
         player.x + player.w > tr.x && player.x < tr.x + tr.w &&
         player.y + player.h > tr.y && player.y + player.h < tr.y + 24) {
-      player.vy = TRAMPOLINE_VY * dt;
+      player.vy = TRAMPOLINE_VY;
       player.onGround = false;
       playBlip(800, 0.15, 0.12);
     }
@@ -331,7 +331,7 @@ function update(now) {
           e.alive = false;
           score += 200;
         }
-        player.vy = STOMP_BOUNCE * dt;
+        player.vy = STOMP_BOUNCE;
         playBlip(300, 0.1, 0.05);
         addPopup(e.type === 'zombie' && e.hp > 0 ? 'BONK!' : 'POW!', ex, ey - 10);
       } else if (punchActive) {
@@ -345,7 +345,7 @@ function update(now) {
       } else if (diff.invincible) {
         // Easy mode: bounce off
         player.vx = player.x < ex ? -3 : 3;
-        player.vy = -5 * dt;
+        player.vy = -5;
       } else if (activePower === 'blueberry') {
         // Shield absorbs
         player.vx = player.x < ex ? -3 : 3;
@@ -354,7 +354,7 @@ function update(now) {
         lives--;
         hitTimer = HIT_FLASH_MS;
         player.vx = player.x < ex ? -4 : 4;
-        player.vy = -6 * dt;
+        player.vy = -6;
         playBlip(150, 0.15, 0.1);
         if (lives <= 0) {
           state = 'gameover';
