@@ -61,6 +61,15 @@ body {
   font-size: 1.05rem;
 }
 
+.hub__version {
+  margin: 2rem 0 0;
+  opacity: 0.35;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.05em;
+  min-height: 1em;
+}
+
 .tiles {
   list-style: none;
   padding: 0;

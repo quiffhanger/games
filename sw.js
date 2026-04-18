@@ -48,6 +48,12 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+self.addEventListener('message', (event) => {
+  if (event.data === 'GET_VERSION') {
+    event.source && event.source.postMessage({ type: 'VERSION', version: CACHE_VERSION });
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
