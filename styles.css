@@ -174,6 +174,223 @@ body {
 .piano-key:nth-child(3) { height: 85%; }
 .piano-key:nth-child(4) { height: 60%; }
 
+/* Colouring icon — a rounded palette with coloured dots. */
+.tile__art--palette {
+  /* Keep the palette centered. */
+}
+
+.palette {
+  width: 100%;
+  height: 100%;
+  background: #fff6e0;
+  border-radius: 45% 45% 50% 50% / 55% 55% 45% 45%;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3),
+    inset 0 0 0 3px #e0c79a;
+  position: relative;
+}
+
+.palette::after {
+  /* Thumb hole. */
+  content: "";
+  position: absolute;
+  right: 10%;
+  bottom: 18%;
+  width: 20%;
+  height: 20%;
+  background: var(--bg-2);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px #e0c79a;
+}
+
+.palette-dot {
+  position: absolute;
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+.palette-dot:nth-child(1) { top: 12%;  left: 20%; }
+.palette-dot:nth-child(2) { top: 10%;  left: 52%; }
+.palette-dot:nth-child(3) { top: 36%;  left: 10%; }
+.palette-dot:nth-child(4) { top: 38%;  left: 62%; }
+.palette-dot:nth-child(5) { top: 60%;  left: 18%; }
+.palette-dot:nth-child(6) { top: 60%;  left: 46%; }
+
+/* Snake tile */
+.tile--snake {
+  background: linear-gradient(135deg, #0b2b0b 0%, #0b1a0b 100%);
+}
+
+.tile__art--snake {
+  position: relative;
+  width: 60%;
+  height: 60%;
+}
+
+.snake-icon {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  width: 100%;
+  height: 100%;
+  gap: 3px;
+}
+
+.snake-icon__seg {
+  background: #4fe340;
+  border-radius: 3px;
+}
+
+.snake-icon__seg--head {
+  background: #8aff80;
+}
+
+.snake-icon__food {
+  background: #ff4f4f;
+  border-radius: 50%;
+}
+
+/* School Run icon — a running figure on grass. */
+.tile--school-run,
+.tile--platformer {
+  background: linear-gradient(180deg, #87CEEB 60%, #5a9e4b 60%);
+}
+
+.tile__art--runner {
+  position: relative;
+}
+
+.runner {
+  width: 40%;
+  height: 80%;
+  position: relative;
+}
+
+/* Head */
+.runner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36%;
+  height: 28%;
+  background: #fdd9b5;
+  border-radius: 50%;
+  box-shadow:
+    0 -4px 0 0 #f0c75e,
+    -3px -5px 0 0 #f0c75e,
+    3px -5px 0 0 #f0c75e;
+}
+
+/* Body + legs */
+.runner::after {
+  content: "";
+  position: absolute;
+  top: 26%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 40%;
+  background: #2980b9;
+  border-radius: 4px;
+  box-shadow:
+    -6px 28px 0 0 #1a6b5a,
+    6px 28px 0 0 #1a6b5a,
+    -6px 38px 0 0 #333,
+    6px 38px 0 0 #333;
+}
+
+/* Security Invaders tile — a pixel-style invader. */
+.tile--invaders {
+  background: linear-gradient(160deg, #141b3d 0%, #1e0b2e 100%);
+}
+
+.tile__art--invaders {
+  align-items: center;
+  justify-content: center;
+}
+
+.invader {
+  position: relative;
+  width: 80%;
+  height: 64%;
+  background: #4fe3ff;
+  clip-path: polygon(
+    22% 0, 78% 0, 78% 15%, 92% 15%, 92% 40%,
+    100% 40%, 100% 70%, 78% 70%, 78% 85%, 92% 85%,
+    92% 100%, 68% 100%, 68% 85%, 32% 85%, 32% 100%,
+    8% 100%, 8% 85%, 22% 85%, 22% 70%, 0 70%,
+    0 40%, 8% 40%, 8% 15%, 22% 15%
+  );
+  filter: drop-shadow(0 0 6px rgba(79, 227, 255, 0.55));
+}
+
+.invader__eye {
+  position: absolute;
+  top: 28%;
+  width: 12%;
+  height: 16%;
+  background: #0b1026;
+  border-radius: 2px;
+}
+.invader__eye--l { left: 28%; }
+.invader__eye--r { right: 28%; }
+
+/* -------- Shared win / game-over card (used by every game) -------- */
+
+.pac-win {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 16, 38, 0.72);
+  backdrop-filter: blur(2px);
+  border-radius: 18px;
+  padding: 1rem;
+  z-index: 5;
+}
+
+.pac-win[hidden] {
+  display: none;
+}
+
+.pac-win__card {
+  background: var(--bg-2);
+  padding: 1.5rem 1.75rem 1.25rem;
+  border-radius: 1.25rem;
+  text-align: center;
+  max-width: 90vw;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3),
+    0 0 0 2px rgba(255, 255, 255, 0.06) inset;
+}
+
+.pac-win__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: var(--accent);
+}
+
+.pac-win__btn {
+  font: inherit;
+  font-weight: 800;
+  font-size: 1.15rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #222;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.pac-win__btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
 /* Jet tile — sky gradient background + CSS fighter-jet silhouette. */
 .tile--jet {
   background: linear-gradient(160deg, #7bc0ff 0%, #4fe3ff 55%, #b6deff 100%);

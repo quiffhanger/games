@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#87CEEB" />
+    <title>School Run</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="icon" href="../../icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../../icons/icon-192.png" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="./school-run.css" />
+  </head>
+  <body class="sr-body">
+    <!-- Portrait rotation prompt -->
+    <div class="sr-rotate-msg">
+      📱 Please rotate your device to <strong>landscape</strong> to play!
+    </div>
+
+    <header class="sr-header">
+      <a class="sr-back" href="../../" aria-label="Back to games">&larr;</a>
+      <div class="sr-hud">
+        <div class="sr-lives" id="lives"></div>
+        <span class="sr-stat">
+          <span class="sr-stat__label">Stars</span>
+          <span class="sr-stat__value sr-coins" id="coins">0</span>
+        </span>
+        <span class="sr-stat">
+          <span class="sr-stat__label">Score</span>
+          <span class="sr-stat__value" id="score">0</span>
+        </span>
+        <span class="sr-stat">
+          <span class="sr-stat__label">Best</span>
+          <span class="sr-stat__value" id="best">0</span>
+        </span>
+      </div>
+    </header>
+
+    <main class="sr-main">
+      <!-- Left controls: move left / right -->
+      <div class="sr-ctrl sr-ctrl--left" aria-label="Movement controls">
+        <div class="sr-move-row">
+          <button
+            class="sr-ctrl__btn sr-ctrl__move"
+            data-action="left"
+            aria-label="Move left"
+          >&#9664;</button>
+          <button
+            class="sr-ctrl__btn sr-ctrl__move"
+            data-action="right"
+            aria-label="Move right"
+          >&#9654;</button>
+        </div>
+      </div>
+
+      <!-- Game canvas -->
+      <div class="sr-stage">
+        <canvas id="game" width="800" height="450"></canvas>
+        <!-- Overlay: menu / win / game-over -->
+        <div class="sr-overlay" id="overlay" hidden>
+          <div class="sr-overlay__card">
+            <div class="sr-overlay__title" id="overlay-title">School Run!</div>
+            <div class="sr-overlay__sub" id="overlay-sub" hidden></div>
+
+            <div class="sr-section-label">Character</div>
+            <div class="sr-btn-row" id="char-btns">
+              <button class="sr-btn" data-char="seb" type="button">
+                👦 Seb
+              </button>
+              <button class="sr-btn" data-char="isla" type="button">
+                👧 Isla
+              </button>
+            </div>
+
+            <div class="sr-section-label">Difficulty</div>
+            <div class="sr-btn-row" id="diff-btns">
+              <button class="sr-btn" data-diff="easy" type="button">
+                Easy
+              </button>
+              <button class="sr-btn" data-diff="medium" type="button">
+                Medium
+              </button>
+              <button class="sr-btn" data-diff="hard" type="button">
+                Hard
+              </button>
+            </div>
+
+            <button class="sr-play-btn" id="play-btn" type="button">
+              Play!
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right controls: jump -->
+      <div class="sr-ctrl sr-ctrl--right" aria-label="Jump control">
+        <button
+          class="sr-ctrl__btn sr-ctrl__jump"
+          data-action="jump"
+          aria-label="Jump"
+        >JUMP</button>
+      </div>
+    </main>
+
+    <script type="module" src="./school-run.js"></script>
+  </body>
+</html>

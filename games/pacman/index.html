@@ -17,9 +17,19 @@
   <body class="pacman-body">
     <header class="pac-header">
       <a class="pac-back" href="../../" aria-label="Back to games">&larr;</a>
+      <button
+        class="pac-tilt-btn"
+        id="tilt-btn"
+        type="button"
+        aria-label="Toggle tilt controls"
+        aria-pressed="false"
+      >
+        Tilt
+      </button>
       <div class="pac-scores">
+        <div class="pac-lives" id="lives"></div>
         <span class="pac-score">
-          <span class="pac-score__label">Dots</span>
+          <span class="pac-score__label">Score</span>
           <span class="pac-score__value" id="score">0</span>
         </span>
         <span class="pac-score">
@@ -30,19 +40,56 @@
     </header>
 
     <main class="pac-main">
+      <!-- Landscape: up/down/left cluster to the left of the maze. -->
+      <div class="dpad dpad--land dpad--land-left" aria-label="Left controls">
+        <button class="dpad__btn dpad__land-up" data-dir="up" aria-label="Up">
+          &#9650;
+        </button>
+        <button class="dpad__btn dpad__land-down" data-dir="down" aria-label="Down">
+          &#9660;
+        </button>
+        <button class="dpad__btn dpad__land-side" data-dir="left" aria-label="Left">
+          &#9664;
+        </button>
+      </div>
+
       <div class="pac-stage">
         <canvas id="game" width="600" height="520"></canvas>
-        <div class="pac-win" id="win" hidden>
+        <!-- Overlay: difficulty selection / win / game-over -->
+        <div class="pac-win" id="overlay" hidden>
           <div class="pac-win__card">
-            <div class="pac-win__title">Yay! You did it! 🎉</div>
-            <button class="pac-win__btn" id="again" type="button">
-              Play Again
-            </button>
+            <div class="pac-win__title" id="overlay-title">Pac-Man</div>
+            <div class="pac-overlay__sub" id="overlay-subtitle" hidden></div>
+            <div class="pac-diff" id="diff-btns">
+              <button class="pac-diff-btn" data-diff="easy" type="button">
+                Easy
+              </button>
+              <button class="pac-diff-btn" data-diff="medium" type="button">
+                Medium
+              </button>
+              <button class="pac-diff-btn" data-diff="hard" type="button">
+                Hard
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="dpad" id="dpad" aria-label="Direction pad">
+      <!-- Landscape: up/down/right cluster to the right of the maze. -->
+      <div class="dpad dpad--land dpad--land-right" aria-label="Right controls">
+        <button class="dpad__btn dpad__land-up" data-dir="up" aria-label="Up">
+          &#9650;
+        </button>
+        <button class="dpad__btn dpad__land-down" data-dir="down" aria-label="Down">
+          &#9660;
+        </button>
+        <button class="dpad__btn dpad__land-side" data-dir="right" aria-label="Right">
+          &#9654;
+        </button>
+      </div>
+
+      <!-- Portrait: single traditional d-pad below the maze. -->
+      <div class="dpad dpad--port" aria-label="Direction pad">
         <button class="dpad__btn dpad__btn--up" data-dir="up" aria-label="Up">
           &#9650;
         </button>

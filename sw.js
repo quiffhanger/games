@@ -1,6 +1,6 @@
 // Service worker: simple versioned cache-first strategy.
 // Bump CACHE_VERSION whenever you ship new files so clients pick them up.
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v15';
 const CACHE_NAME = `kids-games-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -24,6 +24,30 @@ const PRECACHE_URLS = [
   './games/piano-tiles/index.html',
   './games/piano-tiles/piano-tiles.css',
   './games/piano-tiles/piano-tiles.js',
+  './games/colouring/',
+  './games/colouring/index.html',
+  './games/colouring/colouring.css',
+  './games/colouring/colouring.js',
+  './games/colouring/stencils.js',
+  './games/school-run/',
+  './games/school-run/index.html',
+  './games/school-run/school-run.css',
+  './games/school-run/school-run.js',
+  './games/school-run/level.js',
+  './games/school-run/sprites.js',
+  './games/school-run/physics.js',
+  './games/school-run/input.js',
+  './games/school-run/storage.js',
+  './games/space-invaders/',
+  './games/space-invaders/index.html',
+  './games/space-invaders/space-invaders.css',
+  './games/space-invaders/space-invaders.js',
+  './games/platformer/',
+  './games/platformer/index.html',
+  './games/platformer/platformer.css',
+  './games/platformer/main.js',
+  './games/platformer/level.js',
+  './games/platformer/characters.js',
   './games/jet/',
   './games/jet/index.html',
   './games/jet/jet.css',

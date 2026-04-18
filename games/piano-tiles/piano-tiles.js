@@ -8,7 +8,7 @@
 //     pieces (Ode to Joy, Für Elise, Spring from Four Seasons, etc.).
 //   • 3 hearts — lose one per missed tile (tile exits bottom untouched).
 //   • Slow start speed that gently increases every 8 tiles.
-//   • Very generous hit window so a 4-year-old can succeed.
+//   • No timing window: any tile on screen in a column is hittable.
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -20,30 +20,46 @@ const TILE_W = W / COLS;      // 90 px per column
 const TILE_H = 130;           // tall so they're easy to hit
 const GAP = 6;                // gap between tile and column edge
 
-// Visible "tap here" line. Tile is hittable once its bottom has reached
-// (or passed) this y — so the tile visibly touches the line before it's
-// valid to tap. Kids can see exactly when to act.
-const LINE_Y = H * 0.55;      // 352 px from top
 // Miss: tile top passes this y (a little below the bottom edge).
 const MISS_Y = H + TILE_H * 0.25;
 
-const START_SPEED  = 190;   // px / s
-const SPEED_STEP   = 14;    // added every TILES_PER_STEP tiles tapped
-const TILES_PER_STEP = 8;
-const MAX_SPEED    = 520;
+// Difficulty presets — chosen from the settings modal and persisted in
+// localStorage. Each preset tunes the speed ramp:
+//   startSpeed:    initial tile fall speed in px/s
+//   speedStep:     px/s added every `tilesPerStep` successful taps
+//   tilesPerStep:  how many taps between speed bumps
+//   maxSpeed:      cap on the fall speed
+const DIFFICULTIES = {
+  easy:   { label: 'Easy',   startSpeed: 170, speedStep: 10, tilesPerStep: 16, maxSpeed: 330 },
+  normal: { label: 'Normal', startSpeed: 200, speedStep: 20, tilesPerStep: 10, maxSpeed: 560 },
+  fast:   { label: 'Fast',   startSpeed: 240, speedStep: 30, tilesPerStep: 8,  maxSpeed: 720 },
+  crazy:  { label: 'Crazy',  startSpeed: 280, speedStep: 40, tilesPerStep: 6,  maxSpeed: 900 },
+};
+const DEFAULT_DIFFICULTY = 'normal';
+const DIFF_KEY = 'piano-tiles.difficulty';
+
+// "Tweak" multiplier — the Easier/Harder buttons on the game-over dialog
+// shift this up or down in ~20% steps, persisted across sessions. It
+// multiplies the preset's startSpeed, speedStep and maxSpeed on top of
+// whatever difficulty the player picked.
+const TWEAK_KEY  = 'piano-tiles.tweak';
+const TWEAK_BASE = 1.2;
+const TWEAK_MIN  = -6;   // ~0.33x
+const TWEAK_MAX  = 6;    // ~2.99x
+
+// Lives setting — number of misses allowed, or 0 for unlimited.
+const LIVES_KEY       = 'piano-tiles.lives';
+const DEFAULT_LIVES   = 3;
+const LIVES_CHOICES   = [1, 3, 5, 0]; // 0 = infinite
+const MAX_LIVES_HEARTS = 5;
 
 // Space between consecutive tile tops (px). As speed rises, tiles come faster.
 const SPAWN_INTERVAL_PX = TILE_H * 1.85;
-
-const LIVES = 3;
 
 // Colours per column (visual only now; the note played comes from the
 // current classical melody).
 const COL_COLORS  = ['#ff77c6', '#ffd600', '#4fe3ff', '#8aff80'];
 const COL_SHADOW  = ['#c2005a', '#c79a00', '#0097b8', '#2d9900'];
-
-// Pulse timer for the tap line's glow.
-let linePulse = 0;
 
 // ── Classical melodies ─────────────────────────────────────────────────────
 // Each note is a MIDI note number (60 = middle C). Kids "play" each melody
@@ -53,8 +69,15 @@ const MELODIES = [
   {
     name: 'Ode to Joy',
     notes: [
+      // First statement of the theme (A).
       64, 64, 65, 67, 67, 65, 64, 62,
       60, 60, 62, 64, 64, 62, 62,
+      64, 64, 65, 67, 67, 65, 64, 62,
+      60, 60, 62, 64, 62, 60, 60,
+      // Middle section (B) that leads back home.
+      62, 62, 64, 60, 62, 64, 65, 64,
+      60, 62, 64, 65, 64, 62, 60, 62,
+      // Return of the theme to close it out.
       64, 64, 65, 67, 67, 65, 64, 62,
       60, 60, 62, 64, 62, 60, 60,
     ],
@@ -64,6 +87,9 @@ const MELODIES = [
     notes: [
       60, 60, 67, 67, 69, 69, 67,
       65, 65, 64, 64, 62, 62, 60,
+      // "Up above the world so high" / "Like a diamond in the sky".
+      67, 67, 65, 65, 64, 64, 62,
+      67, 67, 65, 65, 64, 64, 62,
     ],
   },
   {
@@ -71,11 +97,15 @@ const MELODIES = [
     notes: [
       76, 75, 76, 75, 76, 71, 74, 72, 69,
       60, 64, 69, 71, 64, 68, 71, 72,
+      // The answering phrase — recurring rondo figure.
+      64, 72, 71, 69, 64, 64, 72, 71, 69,
+      76, 75, 76, 75, 76, 71, 74, 72, 69,
     ],
   },
   {
     name: 'Eine kleine Nachtmusik',
     notes: [
+      67, 62, 67, 62, 67, 62, 67, 71, 74, 72, 71, 69, 67,
       67, 62, 67, 62, 67, 62, 67, 71, 74, 72, 71, 69, 67,
     ],
   },
@@ -84,18 +114,24 @@ const MELODIES = [
     notes: [
       76, 76, 76, 71, 71, 71, 76, 76, 76, 71, 71, 71,
       76, 79, 78, 76, 75, 76, 71,
+      76, 76, 76, 71, 71, 71, 76, 76, 76, 71, 71, 71,
+      76, 79, 78, 76, 75, 76, 71,
     ],
   },
   {
     name: 'Swan Lake',
     notes: [
       71, 69, 68, 69, 71, 73, 74, 73, 71, 69, 68, 69, 71,
+      // Rising restatement — the theme climbs before settling back.
+      73, 75, 76, 74, 73, 71, 74, 73, 71, 69, 68, 69, 71,
     ],
   },
   {
     name: 'Dance of the Reed Flutes',
     notes: [
       74, 76, 78, 76, 74, 76, 78, 76, 74, 74, 76, 78,
+      // Higher echo of the phrase.
+      78, 81, 79, 78, 76, 78, 81, 79, 78, 76, 78, 74,
     ],
   },
   {
@@ -103,11 +139,16 @@ const MELODIES = [
     notes: [
       67, 67, 67, 64, 60, 67, 67, 67, 64, 60,
       67, 67, 67, 72, 67, 64, 60,
+      67, 67, 67, 64, 60, 67, 67, 67, 64, 60,
+      72, 72, 72, 72, 67, 64, 60,
     ],
   },
   {
     name: 'Canon in D',
     notes: [
+      // Pachelbel's ground bass — the piece is built from repetitions of
+      // this figure, so doubling it is literally what the original does.
+      74, 69, 71, 66, 67, 62, 67, 69,
       74, 69, 71, 66, 67, 62, 67, 69,
     ],
   },
@@ -128,6 +169,13 @@ const overlay   = document.getElementById('gameover');
 const titleEl   = document.getElementById('gameover-title');
 const finalEl   = document.getElementById('gameover-score');
 const againBtn  = document.getElementById('again');
+const easierBtn = document.getElementById('easier');
+const harderBtn = document.getElementById('harder');
+const settingsBtn   = document.getElementById('settings-btn');
+const settingsEl    = document.getElementById('settings');
+const settingsClose = document.getElementById('settings-close');
+const diffBtnsEl    = document.getElementById('diff-btns');
+const livesBtnsEl   = document.getElementById('lives-btns');
 
 // ── Canvas setup ───────────────────────────────────────────────────────────
 
@@ -194,6 +242,46 @@ function setBest(n) {
   try { localStorage.setItem(BEST_KEY, String(n)); } catch { /* */ }
 }
 
+function loadDifficulty() {
+  try {
+    const v = localStorage.getItem(DIFF_KEY);
+    return DIFFICULTIES[v] ? v : DEFAULT_DIFFICULTY;
+  } catch { return DEFAULT_DIFFICULTY; }
+}
+function saveDifficulty(k) {
+  try { localStorage.setItem(DIFF_KEY, k); } catch { /* */ }
+}
+
+function loadTweak() {
+  try {
+    const n = parseInt(localStorage.getItem(TWEAK_KEY) || '0', 10);
+    if (Number.isNaN(n)) return 0;
+    return Math.max(TWEAK_MIN, Math.min(TWEAK_MAX, n));
+  } catch { return 0; }
+}
+function saveTweak(n) {
+  try { localStorage.setItem(TWEAK_KEY, String(n)); } catch { /* */ }
+}
+function tweakMult() {
+  return Math.pow(TWEAK_BASE, tweakStep);
+}
+
+function loadLivesMax() {
+  try {
+    const raw = localStorage.getItem(LIVES_KEY);
+    if (raw === null) return DEFAULT_LIVES;
+    const n = parseInt(raw, 10);
+    return LIVES_CHOICES.includes(n) ? n : DEFAULT_LIVES;
+  } catch { return DEFAULT_LIVES; }
+}
+function saveLivesMax(n) {
+  try { localStorage.setItem(LIVES_KEY, String(n)); } catch { /* */ }
+}
+
+let currentDiff = loadDifficulty();
+let tweakStep   = loadTweak();
+let livesMax    = loadLivesMax();
+
 // ── Game state ──────────────────────────────────────────────────────────────
 
 let tiles, score, lives, speed, status;
@@ -208,10 +296,12 @@ let noteIdx;     // position inside that melody
 let melodyBannerTimer; // seconds remaining for the melody-name flash
 
 function newGame() {
+  const diff = DIFFICULTIES[currentDiff];
+  const mult = tweakMult();
   tiles       = [];
   score       = 0;
-  lives       = LIVES;
-  speed       = START_SPEED;
+  lives       = livesMax;     // irrelevant when livesMax === 0 (infinite)
+  speed       = diff.startSpeed * mult;
   status      = 'playing';
   spawnOffset = 0;
   tilesHit    = 0;
@@ -234,7 +324,12 @@ function newGame() {
 }
 
 function renderLives() {
-  livesEl.innerHTML = Array.from({ length: LIVES }, (_, i) =>
+  if (livesMax === 0) {
+    livesEl.innerHTML =
+      '<span class="pt-heart pt-heart--infinite" aria-label="Infinite lives">&#8734;</span>';
+    return;
+  }
+  livesEl.innerHTML = Array.from({ length: livesMax }, (_, i) =>
     `<span class="pt-heart${i < lives ? '' : ' pt-heart--lost'}">&#10084;</span>`
   ).join('');
 }
@@ -279,12 +374,12 @@ function burst(cx, cy, color) {
 // ── Hit detection ───────────────────────────────────────────────────────────
 
 function tryHit(col) {
-  // Find the lowest falling tile in this column that's hittable.
-  // Hittable = tile's bottom has reached or passed the tap line.
+  // Any falling tile in this column is fair game — we pick the one
+  // closest to the bottom (most urgent). There's no timing window: if
+  // a tile is on screen in the column you tapped, you hit it.
   let best = null;
   for (const t of tiles) {
     if (t.col !== col || t.state !== 'falling') continue;
-    if (t.y + TILE_H < LINE_Y) continue; // not touching the line yet
     if (!best || t.y > best.y) best = t;
   }
   if (!best) return false;
@@ -297,9 +392,12 @@ function tryHit(col) {
   if (score > getBest()) setBest(score);
   bestEl.textContent = String(getBest());
 
-  // Speed bump every TILES_PER_STEP tiles.
-  if (tilesHit % TILES_PER_STEP === 0) {
-    speed = Math.min(speed + SPEED_STEP, MAX_SPEED);
+  // Speed bump every `tilesPerStep` tiles, from the chosen difficulty.
+  // The Easier/Harder tweak scales speed numbers on top of the preset.
+  const diff = DIFFICULTIES[currentDiff];
+  const mult = tweakMult();
+  if (tilesHit % diff.tilesPerStep === 0) {
+    speed = Math.min(speed + diff.speedStep * mult, diff.maxSpeed * mult);
   }
 
   // Play the next note from the current classical melody.
@@ -327,14 +425,9 @@ function colFromX(clientX) {
   return Math.min(COLS - 1, Math.max(0, Math.floor(fracX * COLS)));
 }
 
-canvas.addEventListener('pointerdown', (e) => {
-  e.preventDefault();
-  ensureAC();
-  if (status !== 'playing') return;
-  const col = colFromX(e.clientX);
-  tryHit(col);
-});
-
+// Touch path (iOS/iPad/Android). preventDefault suppresses the synthetic
+// mouse events iOS would otherwise fire afterwards, so mousedown below
+// doesn't double-process the same tap.
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
   ensureAC();
@@ -344,7 +437,85 @@ canvas.addEventListener('touchstart', (e) => {
   }
 }, { passive: false });
 
+// Mouse path (desktop). Never fires on iOS because touchstart preventDefault'd.
+canvas.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  ensureAC();
+  if (status !== 'playing') return;
+  tryHit(colFromX(e.clientX));
+});
+
 againBtn.addEventListener('click', newGame);
+
+// ── Easier / Harder (game-over dialog) ─────────────────────────────────────
+// Each click shifts the persistent tweak step, which multiplies the preset's
+// speed numbers by ~1.2^step on the next game. Step is clamped so kids
+// can't end up with a frozen or supersonic game.
+
+function nudgeTweak(delta) {
+  tweakStep = Math.max(TWEAK_MIN, Math.min(TWEAK_MAX, tweakStep + delta));
+  saveTweak(tweakStep);
+  newGame();
+}
+easierBtn.addEventListener('click', () => nudgeTweak(-1));
+harderBtn.addEventListener('click', () => nudgeTweak(+1));
+
+// ── Settings modal ─────────────────────────────────────────────────────────
+
+function syncDiffButtons() {
+  for (const btn of diffBtnsEl.querySelectorAll('[data-diff]')) {
+    btn.dataset.selected = btn.dataset.diff === currentDiff ? 'true' : 'false';
+  }
+}
+function syncLivesButtons() {
+  for (const btn of livesBtnsEl.querySelectorAll('[data-lives]')) {
+    const v = parseInt(btn.dataset.lives, 10);
+    btn.dataset.selected = v === livesMax ? 'true' : 'false';
+  }
+}
+syncDiffButtons();
+syncLivesButtons();
+
+function openSettings() {
+  syncDiffButtons();
+  syncLivesButtons();
+  settingsEl.hidden = false;
+}
+function closeSettings() {
+  settingsEl.hidden = true;
+}
+
+settingsBtn.addEventListener('click', openSettings);
+settingsClose.addEventListener('click', closeSettings);
+settingsEl.addEventListener('click', (e) => {
+  // Click on the dimmed backdrop (but not the card) closes the modal.
+  if (e.target === settingsEl) closeSettings();
+});
+
+diffBtnsEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-diff]');
+  if (!btn) return;
+  const key = btn.dataset.diff;
+  if (!DIFFICULTIES[key]) return;
+  currentDiff = key;
+  saveDifficulty(key);
+  syncDiffButtons();
+  // Restart so the new speed takes effect immediately.
+  newGame();
+  closeSettings();
+});
+
+livesBtnsEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-lives]');
+  if (!btn) return;
+  const v = parseInt(btn.dataset.lives, 10);
+  if (!LIVES_CHOICES.includes(v)) return;
+  livesMax = v;
+  saveLivesMax(v);
+  syncLivesButtons();
+  newGame();
+  closeSettings();
+});
 
 // ── Game loop ────────────────────────────────────────────────────────────────
 
@@ -383,14 +554,17 @@ function update(dt) {
   for (const t of tiles) {
     if (t.state === 'falling' && t.y > MISS_Y) {
       t.state = 'missed';
-      lives--;
-      renderLives();
       playMiss();
       shakeTimer = 0.25;
-      if (lives <= 0) {
-        status = 'gameover';
-        titleEl.textContent = score >= 5 ? 'Amazing! 🎉' : 'Oh no! 💔';
-        finalEl.textContent = `You tapped ${score} tile${score !== 1 ? 's' : ''}!`;
+      // Infinite mode: misses still look/sound bad but never end the game.
+      if (livesMax > 0) {
+        lives--;
+        renderLives();
+        if (lives <= 0) {
+          status = 'gameover';
+          titleEl.textContent = score >= 5 ? 'Amazing! 🎉' : 'Oh no! 💔';
+          finalEl.textContent = `You tapped ${score} tile${score !== 1 ? 's' : ''}!`;
+        }
       }
     }
   }
@@ -406,7 +580,6 @@ function update(dt) {
 
   if (shakeTimer > 0) shakeTimer -= dt;
   if (melodyBannerTimer > 0) melodyBannerTimer -= dt;
-  linePulse += dt;
 }
 
 function updateParticles(dt) {
@@ -448,10 +621,6 @@ function render() {
     ctx.stroke();
   }
 
-  // Tap line — a bright pulsing "tap here" line. Tiles are hittable once
-  // their bottom edge has reached or passed this line.
-  drawTapLine();
-
   // Tiles.
   for (const t of tiles) {
     drawTile(t);
@@ -470,39 +639,6 @@ function render() {
   }
   ctx.globalAlpha = 1;
 
-  ctx.restore();
-}
-
-function drawTapLine() {
-  // Soft pulsing opacity so it catches the eye.
-  const pulse = 0.65 + Math.sin(linePulse * 3.2) * 0.25;
-
-  // Glow underlay.
-  ctx.save();
-  ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
-  ctx.shadowBlur = 18;
-  ctx.strokeStyle = `rgba(255, 255, 255, ${pulse})`;
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(0, LINE_Y);
-  ctx.lineTo(W, LINE_Y);
-  ctx.stroke();
-  ctx.restore();
-
-  // Down-pointing arrows above the line, one per column, inviting the kid
-  // to tap each lane when a tile reaches it.
-  ctx.save();
-  ctx.fillStyle = `rgba(255, 255, 255, ${0.45 * pulse + 0.15})`;
-  for (let c = 0; c < COLS; c++) {
-    const cx = c * TILE_W + TILE_W / 2;
-    const tipY = LINE_Y - 10;
-    ctx.beginPath();
-    ctx.moveTo(cx, tipY);
-    ctx.lineTo(cx - 9, tipY - 14);
-    ctx.lineTo(cx + 9, tipY - 14);
-    ctx.closePath();
-    ctx.fill();
-  }
   ctx.restore();
 }
 

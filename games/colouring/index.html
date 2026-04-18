@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#0b1026" />
+    <title>Colouring</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="icon" href="../../icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../../icons/icon-192.png" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="./colouring.css" />
+  </head>
+  <body class="col-body">
+    <header class="col-header">
+      <a class="pac-back" href="../../" aria-label="Back to games">&larr;</a>
+      <button
+        class="col-header-btn"
+        id="prev-btn"
+        type="button"
+        aria-label="Previous stencil"
+      >
+        &#9664;
+      </button>
+      <div class="col-title" id="stencil-name">Dinosaur</div>
+      <button
+        class="col-header-btn"
+        id="next-btn"
+        type="button"
+        aria-label="Next stencil"
+      >
+        &#9654;
+      </button>
+    </header>
+
+    <main class="col-main">
+      <div class="col-stage" id="stage"></div>
+    </main>
+
+    <footer class="col-footer">
+      <div class="col-palette" id="palette"></div>
+      <div class="col-tools">
+        <button class="col-tool" id="tool-fill" type="button" aria-pressed="true" aria-label="Fill">
+          <svg class="col-tool__icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8 8 4 12 4 16a8 8 0 0016 0c0-4-4-8-8-14z"/>
+          </svg>
+          <span class="col-tool__label">Fill</span>
+        </button>
+        <button class="col-tool" id="tool-pen" type="button" aria-pressed="false" aria-label="Pen">
+          <svg class="col-tool__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 3l4 4L7 21H3v-4z"/>
+          </svg>
+          <span class="col-tool__label">Pen</span>
+        </button>
+        <button class="col-tool" id="tool-erase" type="button" aria-pressed="false" aria-label="Erase">
+          <svg class="col-tool__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 20H7l-5-5 9-9 9 9-5 5z"/>
+            <line x1="18" y1="13" x2="11" y2="20"/>
+          </svg>
+          <span class="col-tool__label">Erase</span>
+        </button>
+        <span class="col-tools__sep"></span>
+        <button class="col-tool col-tool--action" id="tool-undo" type="button" disabled aria-label="Undo">
+          <svg class="col-tool__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 10h10a5 5 0 010 10H9"/>
+            <polyline points="7 6 3 10 7 14"/>
+          </svg>
+          <span class="col-tool__label">Undo</span>
+        </button>
+        <button class="col-tool col-tool--action" id="tool-redo" type="button" disabled aria-label="Redo">
+          <svg class="col-tool__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10H11a5 5 0 000 10h4"/>
+            <polyline points="17 6 21 10 17 14"/>
+          </svg>
+          <span class="col-tool__label">Redo</span>
+        </button>
+        <span class="col-tools__sep"></span>
+        <button class="col-tool col-tool--danger" id="tool-wipe" type="button" aria-label="Wipe">
+          <svg class="col-tool__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+          <span class="col-tool__label">Wipe</span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- Wipe confirmation overlay -->
+    <div class="pac-win col-overlay" id="wipe-confirm" hidden>
+      <div class="pac-win__card">
+        <div class="pac-win__title">Start again?</div>
+        <div class="col-confirm-btns">
+          <button class="pac-win__btn" id="wipe-yes" type="button">Yes, wipe</button>
+          <button class="pac-win__btn col-btn--cancel" id="wipe-no" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./colouring.js"></script>
+  </body>
+</html>

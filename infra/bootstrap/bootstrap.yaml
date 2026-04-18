@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Bootstrap stack for games deployment.
+  Creates deploy IAM role (reuses existing GitHub OIDC provider).
+  Deploy once in eu-west-1 via CloudShell.
+
+Parameters:
+  GitHubOrg:
+    Type: String
+    Default: quiffhanger
+  GitHubRepo:
+    Type: String
+    Default: games
+
+Resources:
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: github-deploy-games
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepo}:*
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+      MaxSessionDuration: 7200
+
+Outputs:
+  DeployRoleArn:
+    Description: Add this as GitHub repo secret AWS_DEPLOY_ROLE_ARN
+    Value: !GetAtt DeployRole.Arn

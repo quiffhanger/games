@@ -1,9 +1,11 @@
 /* Pac-Man game-specific styles. */
 
 .pacman-body {
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  overflow: hidden;
   background: var(--bg);
 }
 
@@ -12,6 +14,7 @@
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1rem;
+  flex-shrink: 0;
 }
 
 .pac-back {
@@ -28,10 +31,64 @@
   font-weight: 700;
 }
 
+/* Tilt toggle — shows when tilt is enabled by becoming yellow. */
+.pac-tilt-btn {
+  height: 44px;
+  padding: 0 0.9rem;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--bg-2);
+  color: var(--fg);
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+}
+
+.pac-tilt-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.pac-tilt-btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: #222;
+  border-color: #fff6b0;
+}
+
+/* When tilt mode is on, every d-pad cluster disappears — it's tilt or
+   buttons, never both. This selector has higher specificity than the
+   portrait/landscape display rules below so it wins. */
+.pacman-body--tilt .dpad {
+  display: none;
+}
+
+.pac-lives {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pac-lives:empty {
+  display: none;
+}
+
+.pac-life {
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
 .pac-scores {
   margin-left: auto;
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 .pac-score {
@@ -54,18 +111,25 @@
   color: var(--accent);
 }
 
+/* --- Main layout ---------------------------------------------------
+   Portrait (default): column — stage on top, single d-pad below.
+   Landscape: row — left pad, stage, right pad.
+*/
 .pac-main {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 0.75rem 1rem;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem 0.75rem;
 }
 
 .pac-stage {
   position: relative;
+  flex: 1;
+  min-height: 0;
   width: 100%;
   max-width: 560px;
   display: flex;
@@ -74,85 +138,79 @@
 }
 
 #game {
-  width: 100%;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
   background: var(--bg);
   border-radius: 18px;
   touch-action: none;
-  display: block;
 }
 
-/* Win overlay */
-.pac-win {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(11, 16, 38, 0.6);
-  backdrop-filter: blur(2px);
-  border-radius: 18px;
+/* Win overlay uses the shared .pac-win rules in styles.css. */
+
+/* ---- Overlay subtitle + difficulty buttons ---- */
+.pac-overlay__sub {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+  color: var(--fg);
+  opacity: 0.75;
 }
 
-.pac-win[hidden] {
+.pac-overlay__sub[hidden] {
   display: none;
 }
 
-.pac-win__card {
-  background: var(--bg-2);
-  padding: 1.5rem 2rem;
-  border-radius: 1rem;
-  text-align: center;
-  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
+.pac-diff {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.75rem;
 }
 
-.pac-win__title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  color: var(--accent);
-}
-
-.pac-win__btn {
+.pac-diff-btn {
   font: inherit;
   font-weight: 800;
-  font-size: 1.15rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
+  font-size: 0.95rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid transparent;
   border-radius: 999px;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.pac-diff-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.pac-diff-btn--active {
   background: var(--accent);
   color: #222;
-  cursor: pointer;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  border-color: #fff6b0;
 }
 
-.pac-win__btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
-}
-
-/* D-pad */
+/* --- D-pad shared -------------------------------------------------- */
 .dpad {
-  display: grid;
-  grid-template-columns: repeat(3, 72px);
-  grid-template-rows: repeat(3, 72px);
-  gap: 6px;
   touch-action: none;
+  flex-shrink: 0;
 }
 
 .dpad__btn {
-  width: 100%;
-  height: 100%;
   border: none;
   border-radius: 14px;
   background: var(--bg-2);
   color: var(--fg);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
   cursor: pointer;
+  padding: 0;
 }
 
 .dpad__btn:active,
@@ -162,25 +220,56 @@
   background: #1d2755;
 }
 
-.dpad__btn--up {
-  grid-column: 2;
-  grid-row: 1;
-}
-.dpad__btn--left {
-  grid-column: 1;
-  grid-row: 2;
-}
-.dpad__btn--right {
-  grid-column: 3;
-  grid-row: 2;
-}
-.dpad__btn--down {
-  grid-column: 2;
-  grid-row: 3;
+/* --- Portrait d-pad (3x3 + cross) ---------------------------------- */
+.dpad--port {
+  display: grid;
+  grid-template-columns: repeat(3, min(22vw, 72px));
+  grid-template-rows: repeat(3, min(22vw, 72px));
+  gap: 6px;
 }
 
-@media (min-width: 640px) {
-  .dpad {
+.dpad--port .dpad__btn--up    { grid-column: 2; grid-row: 1; }
+.dpad--port .dpad__btn--left  { grid-column: 1; grid-row: 2; }
+.dpad--port .dpad__btn--right { grid-column: 3; grid-row: 2; }
+.dpad--port .dpad__btn--down  { grid-column: 2; grid-row: 3; }
+
+/* --- Landscape d-pads (L-shaped clusters on each side) ------------- */
+.dpad--land {
+  display: none;
+  grid-template-columns: repeat(2, min(18vh, 76px));
+  grid-template-rows: repeat(2, min(18vh, 76px));
+  gap: 6px;
+}
+
+/* Left cluster: the LEFT button spans both rows on the left,
+   with UP and DOWN stacked on the right. */
+.dpad--land-left .dpad__land-side { grid-column: 1; grid-row: 1 / span 2; }
+.dpad--land-left .dpad__land-up   { grid-column: 2; grid-row: 1; }
+.dpad--land-left .dpad__land-down { grid-column: 2; grid-row: 2; }
+
+/* Right cluster: mirrored — RIGHT spans both rows on the right,
+   UP and DOWN stacked on the left. */
+.dpad--land-right .dpad__land-side { grid-column: 2; grid-row: 1 / span 2; }
+.dpad--land-right .dpad__land-up   { grid-column: 1; grid-row: 1; }
+.dpad--land-right .dpad__land-down { grid-column: 1; grid-row: 2; }
+
+/* --- Orientation switch -------------------------------------------- */
+@media (orientation: landscape) {
+  .pac-main {
+    flex-direction: row;
+    gap: 0.75rem;
+    padding: 0.25rem 0.5rem 0.5rem;
+  }
+  .pac-stage {
+    max-width: none;
+    height: 100%;
+  }
+  .dpad--port { display: none; }
+  .dpad--land { display: grid; }
+}
+
+@media (min-width: 640px) and (orientation: portrait) {
+  .dpad--port {
     grid-template-columns: repeat(3, 84px);
     grid-template-rows: repeat(3, 84px);
   }

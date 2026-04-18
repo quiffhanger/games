@@ -1,0 +1,330 @@
+/* School Run — game-specific styles.
+   Landscape-only layout with thumb controls on each side. */
+
+.sr-body {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #87CEEB;
+}
+
+/* Force landscape prompt */
+.sr-rotate-msg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 1.3rem;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+@media (orientation: portrait) {
+  .sr-rotate-msg { display: flex; }
+  .sr-header,
+  .sr-main { display: none !important; }
+}
+
+/* ── Header (HUD) ─────────────────────────────────────────────────────── */
+.sr-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem;
+  flex-shrink: 0;
+  background: rgba(11, 16, 38, 0.6);
+  z-index: 10;
+}
+
+.sr-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-2);
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.sr-hud {
+  margin-left: auto;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.sr-lives {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  font-size: 1.1rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sr-life {
+  width: 14px;
+  height: 14px;
+  background: #e53935;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: inline-block;
+}
+
+.sr-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1;
+}
+
+.sr-stat__label {
+  font-size: 0.6rem;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.sr-stat__value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.sr-coins {
+  color: #ffd700;
+}
+
+/* ── Main layout (landscape: controls – canvas – controls) ────────────── */
+.sr-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+/* ── Control zones ─────────────────────────────────────────────────────── */
+.sr-ctrl {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  flex-shrink: 0;
+  touch-action: none;
+  z-index: 5;
+}
+
+.sr-ctrl--left {
+  width: 120px;
+  align-items: flex-start;
+}
+
+.sr-ctrl--right {
+  width: 100px;
+  align-items: flex-end;
+}
+
+.sr-ctrl__btn {
+  border: none;
+  border-radius: 16px;
+  background: rgba(20, 27, 61, 0.75);
+  color: var(--fg);
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  padding: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sr-ctrl__btn:active,
+.sr-ctrl__btn[data-active="true"] {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  background: rgba(40, 55, 100, 0.85);
+}
+
+/* Move buttons */
+.sr-ctrl__move {
+  width: 64px;
+  height: 64px;
+}
+
+/* Row of left/right buttons side by side */
+.sr-move-row {
+  display: flex;
+  gap: 6px;
+}
+
+/* Jump button (larger) */
+.sr-ctrl__jump {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 800;
+  background: rgba(255, 77, 77, 0.7);
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+.sr-ctrl__jump:active,
+.sr-ctrl__jump[data-active="true"] {
+  background: rgba(255, 77, 77, 0.9);
+}
+
+/* ── Canvas stage ──────────────────────────────────────────────────────── */
+.sr-stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#game {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  background: #87CEEB;
+  border-radius: 6px;
+  touch-action: none;
+}
+
+/* ── Overlay (menu / win / game over) ──────────────────────────────────── */
+.sr-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 16, 38, 0.72);
+  backdrop-filter: blur(2px);
+  border-radius: 6px;
+  padding: 1rem;
+  z-index: 20;
+}
+
+.sr-overlay[hidden] {
+  display: none;
+}
+
+.sr-overlay__card {
+  background: var(--bg-2);
+  padding: 1.25rem 1.5rem 1rem;
+  border-radius: 1.25rem;
+  text-align: center;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3),
+    0 0 0 2px rgba(255, 255, 255, 0.06) inset;
+}
+
+.sr-overlay__title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+}
+
+.sr-overlay__sub {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+  color: var(--fg);
+  opacity: 0.75;
+}
+
+.sr-overlay__sub[hidden] {
+  display: none;
+}
+
+.sr-section-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.5;
+  margin-top: 0.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.sr-btn-row {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sr-btn {
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.85rem;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.sr-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.sr-btn--active {
+  background: var(--accent);
+  color: #222;
+  border-color: #fff6b0;
+}
+
+.sr-play-btn {
+  font: inherit;
+  font-weight: 800;
+  font-size: 1.1rem;
+  padding: 0.65rem 1.8rem;
+  border: none;
+  border-radius: 999px;
+  background: #4caf50;
+  color: #fff;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.sr-play-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ── Responsive tweaks ─────────────────────────────────────────────────── */
+@media (max-height: 400px) {
+  .sr-header { padding: 0.15rem 0.5rem; }
+  .sr-ctrl--left { width: 100px; }
+  .sr-ctrl--right { width: 85px; }
+  .sr-ctrl__move { width: 52px; height: 52px; font-size: 1.3rem; }
+  .sr-ctrl__jump { width: 64px; height: 64px; font-size: 0.9rem; }
+}
+
+@media (min-width: 1024px) {
+  .sr-ctrl__move { width: 72px; height: 72px; }
+  .sr-ctrl__jump { width: 90px; height: 90px; }
+}

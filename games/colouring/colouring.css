@@ -1,0 +1,221 @@
+/* Colouring game — kid-friendly paint-by-tap. */
+
+.col-body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* -------- Header -------- */
+
+.col-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  flex-shrink: 0;
+}
+
+.col-title {
+  flex: 1;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.col-header-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  background: var(--bg-2);
+  color: var(--fg);
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.col-header-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* -------- Stage (the drawing itself) -------- */
+
+.col-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  padding: 0.25rem 0.5rem;
+}
+
+.col-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  padding: 0.5rem;
+}
+
+.col-stage svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+/* Every fillable region gets a tap cursor and a nice satisfying
+   "press" animation when you touch it. */
+.col-stage [data-region] {
+  cursor: pointer;
+  transition: filter 0.12s ease;
+}
+
+.col-stage [data-region]:active {
+  filter: brightness(0.9);
+}
+
+/* -------- Footer: palette + tools -------- */
+
+.col-footer {
+  flex-shrink: 0;
+  padding: 0.5rem 0.75rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.col-palette {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+
+.col-swatch {
+  aspect-ratio: 1 / 1;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.col-swatch[aria-pressed="true"] {
+  border-color: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35),
+    0 0 0 2px var(--accent);
+  z-index: 1;
+}
+
+/* White swatch needs a visible outline even when not selected. */
+.col-swatch[data-colour="#ffffff"] {
+  border-color: #888;
+}
+
+/* -------- Tool bar -------- */
+
+.col-tools {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.col-tools__sep {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0.15rem 0.1rem;
+  flex-shrink: 0;
+}
+
+.col-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0.3rem 0.45rem 0.25rem;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: var(--bg-2);
+  color: var(--fg);
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  font: inherit;
+  min-width: 0;
+}
+
+.col-tool__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.col-tool__label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+  line-height: 1;
+}
+
+.col-tool:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.col-tool[aria-pressed="true"] {
+  background: var(--accent);
+  color: #222;
+  border-color: #fff6b0;
+}
+
+.col-tool:disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+.col-tool--danger {
+  color: #ff5252;
+}
+
+/* -------- Wipe confirmation overlay -------- */
+
+.col-overlay {
+  position: fixed;
+  border-radius: 0;
+  z-index: 10;
+}
+
+.col-confirm-btns {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.col-btn--cancel {
+  background: var(--bg);
+  color: var(--fg);
+}
